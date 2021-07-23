@@ -1,0 +1,46 @@
+screenshot neo
+
+upload validation
+add new transaction
+
+new data upload wizard
+preset configuations> it is admin tample but here we use our own tamplete for test, but actual will be admin tamplete.
+
+template name will be asc/desc order
+
+tempate status > active / inactive> when inactive it will not show in the dropdown list and tamplate list as well
+
+add tamplate> need to create excel file with some columns then upload
+Test_sample.xls
+
+
+create mapping with column (from uploaded file)
+
+always check file name should be unique while upload same tamplate file.
+
+after file upload> click file load reconcilation> click status=in progress
+>transactions >filter=source name=upload file name>
+
+
+single transaction update:
+
+Error correction, all details, notes, itemized trascation.
+
+=====================
+add new trasaction:
+business rules, configuration is needed, it will depends on the peticular company.
+
+field:
+source=SAP
+add value in the mendatory fields and click SAVE, then add come notes, click insert.
+
+click return to trancaction from popup
+
+it will be found transaction ID 
+from last in the transaction list.
+
+filter will reamain utill> logout, refresh browser, click reset all filters
+
+HCO=health care organization
+HCP=health care professional
+
