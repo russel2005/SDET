@@ -129,6 +129,7 @@ create and checkout Auth, add file and commit #here Auth is local branch
 
 Scenario5-b: Merge 3-Way  when branch HEAD is previous master branch commit. and master updated and merge with other branch.
 ==========
+> git checkout master
 > git status
 > git merge auth
 > git branch --merged
