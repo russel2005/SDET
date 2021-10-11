@@ -22,6 +22,11 @@ $ git config --list #this will show you all current config list
 > git commit -m "add"
 > git push -u origin master
 
+=========create first branch and push into git=================
+> git clone gitURL
+> git branch branchname
+> git branch --all
+> git push --set-upstream origin <branch name>
 =========beginning============================
 > git init
 > git remote -v
