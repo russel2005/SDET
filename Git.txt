@@ -40,6 +40,10 @@ $ git config --list #this will show you all current config list
 > git status
 > git push origin master
 
+===========Excluse/Ignore file when commit==========
+> git update-index --assume-unchanged pom.xml 
+
+
 
 ===========Stage==============
 $ git add filename # it move file into stage area.
