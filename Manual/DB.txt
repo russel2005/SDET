@@ -21,4 +21,13 @@ ON a.username = b.username
 AND a.email = b.email
 ORDER BY a.email
 
+## Use COALESCE to change NULL values into real values
+The COALESCE function takes a number of arguments and returns the first non-NULL argument. If all of the arguments are NULL, then the COALESCE returns NULL. 
+For example,
+
+select coalesce('love', 'sql');
+-- returns love
+
+select coalesce(null, 'love', 'sql');
+-- returns love
 
