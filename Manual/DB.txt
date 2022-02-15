@@ -1,0 +1,24 @@
+## Find duplicate records?
+SELECT username, email, COUNT(*)
+FROM users
+GROUP BY username, email
+HAVING COUNT(*) > 1
+
+## Find duplicate records in multiple columns?
+SELECT OrderID, ProductID, COUNT(*)
+FROM OrderDetails
+GROUP BY OrderID, ProductID
+HAVING COUNT(*)>1
+
+##  List all rows contains duplicate records in table?
+SELECT a.*
+FROM users a
+JOIN (SELECT username, email, COUNT(*)
+FROM users 
+GROUP BY username, email
+HAVING count(*) > 1 ) b
+ON a.username = b.username
+AND a.email = b.email
+ORDER BY a.email
+
+
