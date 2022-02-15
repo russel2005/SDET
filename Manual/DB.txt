@@ -31,3 +31,11 @@ select coalesce('love', 'sql');
 select coalesce(null, 'love', 'sql');
 -- returns love
 
+## update null value in the table?
+SET @Name = NULL;
+
+UPDATE emp
+SET name="gaurav"
+WHERE    (@Name IS NULL     AND name IS NULL)
+      OR (@Name IS NOT NULL AND name = @Name)
+      
