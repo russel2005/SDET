@@ -117,6 +117,11 @@ or
 $ git reset --hard 0ad5a7a6
 using hashcode
 
+## how to revert to origin master branch version of file?
+$ git checkout HEAD filename or $ git checkout -- filename >>note: assuming added file but didn't commit.
+$ git checkout origin/master filename   >>note: assuming you did commit it.
+$ git reset --hard origin/master >>note: blow away all commits from your branch.
+
 CAUTION! Changing history can have nasty side effects. If you need to change commits that exist on GitHub (the remote), proceed with caution. If you need help, reach out at github.community or contact support.
 
 Glossary
