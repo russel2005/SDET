@@ -188,5 +188,12 @@ if you dont want to change git history
 > git checkout localbranch
 > git 
 
-
+8. Latest commit move to 'Feature' branch from 'Master' branch and change master brach or remove last commit from master branch
+--------------------------------------------------------------------------------------------------------------------------------
+> git log
+> git checkout sample-feature
+> git cherry-pick LatestGitHashFromMasterBranch  # it will move latest commit from master branch to feature branch
+> git checkout master
+> git reset --hard 2ndLatestGitHashFromMasterBranch  # it will remove latest commit from master branch
+> git clean -df # it will delete folder and untracked file
 
