@@ -1,0 +1,81 @@
+>git clone giturl.git
+>git branch test
+>git checkout test
+#change your file
+>git status
+>git add README.md
+>git commit -m "silly changes"
+>git push --set-upstream origin test
+
+## 1. Interactive Rebase
+## 2. Cherry-Pick
+## 3. Reflog
+## 4. Submodules
+==================================
+>git log --oneline #show git commit msg in one line
+# if you want change previous commit like 2nd or 3rd .... commit then use interactive rebase
+>git rebase -i HEAD~2 # using for change commit msg
+-------------------------------
+pick 545b45jb Index.html change
+pick rlk453h4 faq.html change
+-------------------------------
+# now change pick to reword
+-------------------------------
+reword 545b45jb Index.html change # <squash> key we can use to combine two commit into one
+pick rlk453h4 faq.html change
+-------------------------------
+# save and closed
+# it will open another editor window and change the commit msg and save. it will change the msg
+>git log --oneline
+===============================
+
+## Moving a commit to a Different Branch Using <Cherry-Pick>
+# Example c3 committed into Main branch intead of Feature branch.
+
+> git chechout feature/newsletter
+> git cherry-pick 26bf1b48 # here hashcode = 26bf1b48
+> git checkout master
+> git reset --hard HEAD~1
+
+===============================
+## Recevering Deleted Commits with the Reflog
+# eample: you think you want to get rid of some commits, you use "git reset"... , you notice it was bad idea and panic.
+> git log --oneline
+------------------
+545b45jb Index.html change
+rlk453h4 faq.html change
+3456bd4b Index.html change
+------------------
+>git reset --hard 3456bd4b
+> git log --oneline
+------------------
+3456bd4b Index.html change
+------------------
+# you find horibble mistake to remove latest 2 commit.
+>git reflog
+>git branch happy-ending 545b45jb 
+# here hashcode we get from reflog and pick the previous latest commit and save into new branch
+===============================
+## Copy-Pasting Third Party Code the Ugly Downside
+# submodules basically nested git repo, Git repos inside Git Repos
+> git submodule add gitUrl 
+> git status
+> git commit -m "Add new submodule from gitUrl"
+> git submodule update --init --recursive
+or
+> git clone --recurse-submodules gitUrl.git
+================================================
+++++++++++++++++++++++++++++++++++++++++++++++++
+## Search @ Find
+- by date		--before / --after
+- by message	--grep
+- by author 	--author
+- by file		-- filename
+- by branch		branch-A
+
+================================================
+> git log --after="2023-7-1"	--before="2023-4-1"
+> git log --grep=""
+> git log --author=""
+> git log -- README.md
+
