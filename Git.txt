@@ -1,3 +1,4 @@
+PAT token: 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
 $git init
 $git add filename
 $git status
