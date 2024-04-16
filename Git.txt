@@ -360,3 +360,6 @@ The rm -r command will recursively remove your folder:
 or
 > git rm filename.java
 
+============how to add tags===============
+> git tag -a v1.2.0 -m "tagging version v1.2.0 on 4/16/2024"
+> git push origin --tags
