@@ -1,0 +1,2734 @@
+Automation with Selenium WebDriver
+
+
+Automation with Selenium WebDriver using Hybrid Framework involving modularization, keyword-driven, reusability, page-objects (locators: XPaths), utilities, data-driven, report-driven approach
+
+1. Automation Framework Design (Hybrid)
+2. Automation Development/Implement/Code
+3. Debugging & Execution
+4. Reporting
+
+----------------------------------------------------------
+
+Software Downloads: 
+
+Java Version 8 Update 181:  https://java.com/en/download/ 
+
+Eclipse IDE for Java : http://www.eclipse.org/downloads/packages/
+(or NetBeans or BluJ or IntelliJ IDEA)
+
+Chrome Browser:  Latest Version 70.0.3538.110 
+Firefox Browser: Latest Version 62.0.2 
+
+Selenium WebDriver Latest Verion 3.141.59 for Java (https://www.seleniumhq.org/projects/ide/)
+
+ChromeDriver Latest Version:  chromedriver_win32.zip @  https://sites.google.com/a/chromium.org/chromedriver/downloads
+Firefox Driver Latest Version: https://github.com/mozilla/geckodriver/releases
+
+GitHub:  http://download.eclipse.org/egit/updates  or  https://desktop.github.com/
+
+Notes:
+if Can't start Eclipse - Java was started but returned exit code=13
+- set eclipse.ini to below vm:
+-vm C:\Program Files\Java\jdk1.8.0_111\bin\javaw.exe
+-vm C:\Program Files (x86)\Java\jre1.8.0_171\bin\javaw.exe
+
+If WebDriver instance is not showing import suggestion, just restart eclipse and it will be loaded properly
+
+Create below folders for reporting:
+C:\Selenium_Logs
+C:\Selenium_Logs\Screenshots
+=====================================
+
+Selenium History:
+
+Selenium 1.x - Selenium RC (Remote Control)  - Record & Playback 
+Selenium 2.x - Selenium WebDriver - Programatic Automation (Java 1.7)
+Selenium 3.x - Selenium WebDriver Compatible with Java 1.8  (Current Ver)
+
+Drivers Configuration:
+
+Unzip the downloaded Selenium drivers 
+Store them in a location (C:\drivers\lib)
+Unzip the downloaded Browser (chrome & firefox) drivers
+Store them in a location (C:\drivers\)
+
+Configuration:
+
+Go to Eclipse: Create a new project (AutomationTutorial) -> Right click on project -> Properties -> Java Build Path -> Click on Tab Libraries -> Add Library -> User Library -> Next -> User Libraries -> New -> Type lib -> Add External Jars -> Browser the downloaded Jars -> Ok -> Finish -> Apply
+
+To Add more Jars : Select libs -> Edit -> Add remaining Jars -> Finish
+Add External Libraries: Repeat the above process
+
+
+Compatibility Equation of relationship b/w Browser/Driver/Selenium
+Chrome Browser v.55 = 	Chromedriver v.2.25  = Selenium Jar 2.x/3.x
+Firefox Browser 50.1.0 = Gecko Driver v0.11.1 = Selenium 2.x/3.x
+Microsoft Edge (Windows 10.x) =  MicrosoftWebDriver 3.14393 = Selenium 3.x
+IE9/11 = IEDriver_Win32/64 = Selenium 2.x
+
+Notes: For any paths: Use escape character backslash(\) like \\ or /
+
+Drivers Setup:
+
+Chrome:
+if(browser.equals("chrome")){
+System.setProperty("webdriver.chrome.driver","C:\\drivers\\chromedriver.exe");
+WebDriver driver = new ChromeDriver();
+driver.get(url);
+driver.manage().window().maximize();
+			}
+
+Firefox:
+else if(browser.equals("firefox")){
+
+System.setProperty("webdriver.gecko.driver","C:\\drivers\\geckodriver.exe");
+driver = new FirefoxDriver();
+driver.get(url);
+driver.manage().window().maximize();
+			}
+
+Edge:
+else if(browser.equals("edge")){
+
+System.setProperty("webdriver.edge.driver","C:\\drivers\\MicrosoftWebDriver.exe");
+driver = new EdgeDriver();
+driver.get(url);
+driver.manage().window().maximize();
+			}
+
+
+
+-----------------------------------------------------		
+
+XPaths : 
+
+To uniquely identify the application's (AUT) objects in browser.
+
+DOM (Document Object Model):
+Chrome - F12 or Right click on object Inspect Element or Ctrl+Shift+i
+Firefox - FireBug+FirePath - XPath 
+
+
+Operations in DOM:
+Highlight the object (arrow) inspector , note the properties and values 
+Xpath based out of DOM - write & validate inside the XPath Validator : - 1 of 1 Match 
+
+Syntax for Simple Xpath (Exact/ Full Match) : 
+Syntax: //type[@propertyName='propertyValue']
+Example: //input[@title='Search']
+
+Types of XPaths:
+
+Absolute XPath: Default Xpath of object starting from  html till the descendent element
+
+Ex: /html/body/div/span/*[@id="tsf"]/div[2]/div/div[1]/div/div[1]/input
+
+Relative XPath: Customized XPath starting from it's descendent object's vicinity using //
+
+*Example of Relative XPATH: //input[contains(@name,'userName')]
+//div[contains(@jsname,'VlcLAe')]//input[contains(@name,'btnK') and contains(@value,'Google Search')]
+ 
+Subtypes of Relative XPaths:
+ 1. Exact/Full Match XPath: Using = sign we take whole property value
+    Examples : 
+//img[@id='hplogo']
+//a[text()='3.14.0']
+//a[text()='see the wiki page']
+ 
+ *2. Partial Match XPath: Using contains keyword we take a part of the property value which is constant
+     Example : 
+//img[contains(@id,'logo')]
+
+
+*Simple XPath (Partial Match & one property-value) :
+
+Syntax: //type[contains(@propertyName,'propertyValue')] 
+
+Examples of simple XPaths:
+//input[contains(@value,'Search')]  (note: use @propertyName)
+//type[contains(text(),'propertyValue')] (note: use text())
+//a[contains(@href,'operadriver')] 
+//img[contains(@src,'browserstack')]
+//a[contains(text(),'Terms')]
+//span[contains(text(),'Business')]
+//a[contains(text(),'Chat Now')]
+//a[contains(@title,'Overview of Selenium')]   {for operating on About object on top title bar}
+//a[contains(text().'CHANGELOG')]
+Auto generated xpath: //*[@id="menu_about"]/a
+//select[@id='ember735']
+
+Complex XPath (Parent/Child/Sibling with Descendent object with multiple property-value combinations):
+
+Syntax: 
+//ParentElement1[@prop='val']/parent2//type[contains(@propertyName1,'propertyValue1') and/or (@propertyName2,'propertyValue2') ]/child1/child2
+
+
+Examples of complex XPaths:
+//li[contains(@name,'County')]//a[contains(@title,'Overview of Selenium') and contains (@href,'about')]//li -> 1 of 1 Match
+//a[contains(@title,'Overview of Selenium') and contains (@href,'about') and text()='About']
+
+//div//label[contains(@class,'col-xs-5 col-sm-4 col-md-6') and contains(@for,'arrivalCalendar_0') and contains(@field,'from')]
+//div[2]/div/div[2]/div[2]/div/center/input[contains(@class,'gNO89b') and contains(@value,'Google Search') and contains(@name,'btnK') and contains(@type,'submit')]
+//*[@id="tsf"]/div[2]/div/div[2]/div[2]/div/center/input[1]
+//div[@class='VlcLAe']/center/input[contains(@value,'Google Search')]
+			
+
+Web Table Xpaths:
+
+For table objects, first copy the xpath from chrome DOM and then customize it.
+
+Absolute XPath for a web table: 
+(Right click on the element selectd in DOM -> Copy -> Copy Xpath)
+/html/body/div/table/tbody/tr/td[2]/table/tbody/tr[4]/td/table/tbody/tr[1]/td[2]/table/tbody/tr[5]/td/table/tbody/tr[3]/td/font
+
+Customized xpath for a Web Table: (Delete all the parent objects till the first table object from the right, and prefix it with // and keep going from right to left by mentioning more parent object as necessary - keep on doing this until you get 1 match) 
+
+ //table/tbody/tr[3]/td/font
+ //table/tbody/tr[3]/td/p[1]/font/b
+ //table/tbody/tr[3]/td/p[3]/a/font/b
+ //input[contains(@name,'servClass') and contains (@value,'First']
+ //table//tbody//tr//td[contains(@class, 'frame_header_info')]//font[contains(text(),'London to Portland')]
+//table/tbody/tr[5]/td/table/tbody/tr[3]/td/font/b[contains(text(),'London')]
+//table/tbody/tr[3]/td/font[contains(text(),'London')]
+//table/tbody/tr[5]/td/font
+//table/tbody/tr[1]/td[2]/font/font/font/b/font[contains(text(),'USD')]
+//table/tbody/tr[2]/td[2]/font/b/font/font/b/font
+table.tbody > tr:nth-child(12)>td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font > b > font > font > b > font
+//table/tbody/tr/td[1]/b/font/font/b/font[1]
+
+
+Locators of objects:
+	driver.findElement(By.className("className"));
+	driver.findElement(By.cssSelector("cssSelector"));
+	driver.findElement(By.id("id"));
+	driver.findElement(By.linkText("linkText"));
+	driver.findElement(By.name("name"));
+	driver.findElement(By.partialLinkText("partialLinkText"));
+	driver.findElement(By.tagName("tagName"));
+
+---------------------------------
+
+ XPath vs CSSSelector :
+ 
+XPath - Accurate
+CSSSelector - Faster
+
+Examples of CssSelector:
+ #highlighter_969746.div.lines > div:nth-child(1) > table > tbody > tr > td > code.keyword
+ #highlighter_969746.div.lines.div:nth-child(1).table.tbody.tr.td.code.keyword
+#uf_I-pickup-display
+
+
+
+****Imp Notes on XPath:
+// means Relative
+/ means immediate
+Instead of using "" use '' (if you use "" you have escape using \ so single quote is better)
+exact match use =
+partial match use contains 
+XPath must be valid and yield 1 match only
+Make sure you get exactly 1 matches (1 of 1)
+If it's text property: text(),   If it's any other property: @href
+To open XPath Validator, Ctrl+F 
+
+SubString: String.subString(int beginIndex, int endIndex)
+Convert from String to Integer: Integer.parseInt(String)
+
+==================================================
+
+Operations on objects:
+
+Syntax for Operation: 
+
+Example of Click: 
+driver.findElement(By.id/text/linkText/CSSSelector/XPath/("Expression/value of id/text/linkText/CSSSelector/XPath")).click();
+
+findElement(By.xpath("//a[contains(text(),'REGISTER')]")).click()         findElement(By.linkText("REGISTER")).click();
+driver.findElement(By.xpath("//input[contains(@name,'q')]")).sendKeys("Flight Booking to Chicago"); 
+ 
+
+---------------------------------------------------
+
+
+
+
+
+Configuration Management Tools:
+
+1. SVN ( http://subclipse.tigris.org/update_1.12.x) - SVN Repository URL Example: http://10.145.21.12/repos/ClientAutomationProject
+2. Subversion Tortoise
+3. GitHub (Free & open source)
+4. IBM Clear Case (License based software)
+5. Microsoft: Visual Source Safe (VSS)
+
+
+GIT Hub: 
+Repository:
+https://github.com/sangamautomation/AutomationSeleniumJavaProject.git
+
+GitHub Configuration:
+ 
+ 1. Create account in github (https://github.com) - Sign Up & Sign In
+ 2. Goto  https://github.com/sangamautomation/AutomationSeleniumJavaProject.git
+ 3. Fork it (so that you don't affect the master with your changes) - creates your own branch to contribute your homework code
+ 4. Clone or Download : Clone your fork into our local system by open in desktop option/ Download Zip
+ 5. UnZip the project
+ 6. Import project into your Eclipse
+ 7. Students will make some changes (Homework)
+
+ 8. Install GitHub using Help->Install New Software [GitHub - http://download.eclipse.org/egit/updates] OR /Marketplace {search for egit and select egit (2nd option)}
+ 9. Edit/Add new files
+ 10. Add to Index : For New files only
+ 11. Edit Files: Team->Synchronize->Commit->Commit and Push (Commit msg)
+ 12. Add Menu Item for Git [Window-Perspective-Customize Perspective]: Commit directly & mention Commit comment & Git Staging: Commit and Push
+ 
+
+Git Commands using GitBash:
+git config --global user.email "you@example.com"
+git config --global user.name "Your Name"
+git clone https://github.com/sangamy/AutomationTutorial_Framework.git "workspace"
+git remote add origin /path/to/origin.git
+git add .
+git commit -f -m "initial commit"
+git push origin master
+git pull
+git status
+
+Git-Eclipse Process:
+Convert existing non-Git project, right click on Project, Team -Share Project & push to Git
+Team-Add to index-Commit-Add comment-Commit and push
+
+Git Downloads: (Optional)
+Git Bash (Command line interface): https://git-scm.com/downloads
+Git desktop: https://desktop.github.com/
+
+Git Help:
+https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
+https://gist.github.com/mindplace/b4b094157d7a3be6afd2c96370d39fad
+https://stackoverflow.com/questions/4181861/src-refspec-master-does-not-match-any-when-pushing-commits-in-git
+
+Automation Framework:
+
+1. Linear Framework (google.com): All-in-one class
+2. Modularized Framework (demoaut.com):infrastructure, pageObjects, utils
+3. Hybrid Framework (Keyword driven, data-driven, Util driven, page object model)
+  
+ HYBRID FRAMEWORK:
+ 
+Modularization(Sub-divided code into modules Modules for Maintainability) 
++ Keyword-driven (Reusable Functions of Infrastructural level & Page level for encapsulating)
++ Page Objects (For encapsulating the XPaths)
++ Data-driven (Read test data from Excel spreadsheet and enter the values of each key in parameterized function) 
++ Utility Functions (Useful Methods: Reporting/Validation/Date/Excel..) 
++ Reporting (Embed screenshots + Captions + Header + Email )
++ Continuous Integration (Jenkins- Schedule Execution for regression suite) 
+  
+
+Infrastructure: To interact with different objects
+Textbox, Radiobutton, Link, Checkbox, Dropdown, Combobox, Label, Table
+
+
+
+	//Click Link
+	public void clickLink(WebDriver driver, String xpathExpression) {
+		driver.findElement(By.xpath(xpathExpression)).click();
+		System.out.println("Clicked Link "+ xpathExpression);
+
+	}
+
+	//Type in Textbox
+	public void setText(WebDriver driver, String xpathExpression, String inputText) {
+		driver.findElement(By.xpath(xpathExpression)).sendKeys(inputText);
+		System.out.println("Set Text "+ xpathExpression + " - "+inputText);
+
+	}
+
+	//Select Radiobutton
+	public void selectRadiobutton(WebDriver driver, String xpathExpression) {
+		driver.findElement(By.xpath(xpathExpression)).click();
+		System.out.println("Selected Radiobutton "+ xpathExpression);
+
+	}
+
+	//Select Checkbox
+	public void selectCheckbox(WebDriver driver, String xpathExpression) {
+		driver.findElement(By.xpath(xpathExpression)).click();
+		System.out.println("Selected Checkbox "+ xpathExpression);
+
+	}
+
+	//Select Dropdown  
+	public void selectDropdown(WebDriver driver, String xpathExpression, String inputVal) {
+
+		Select sel = new Select(driver.findElement(By.xpath(xpathExpression)));
+		sel.selectByVisibleText(inputVal);
+
+		System.out.println("Selected Dropdown "+ xpathExpression + " - " + inputVal);
+
+	}
+	
+	//Capture Text
+	public String getText(WebDriver driver, String xpathExpression) {
+		String capturedText = driver.findElement(By.xpath(xpathExpression)).getText();
+		System.out.println("Get Text "+ xpathExpression + " - " + capturedText);
+		return capturedText;
+			
+	}
+
+
+	//Implicit Wait
+	public static void waitImplicitely(WebDriver driver, long maxTimeout) {
+		driver.manage().timeouts().implicitlyWait(maxTimeout, TimeUnit.SECONDS);
+		System.out.println("waitImplicitely - "+ maxTimeout);
+	}
+
+	//Explicit Wait
+	public static void waitExplicitely(WebDriver driver, long maxTimeout, String xpathExpression) {
+
+		WebDriverWait webwait = new WebDriverWait(driver, maxTimeout);
+		webwait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpathExpression)));
+		System.out.println("waitExplicitely - "+ maxTimeout + " - "+ xpathExpression);
+	}
+
+	//Explicit Wait
+	public static void waitExplicitely(WebDriver driver, long maxTimeout, String xpathExpression, String textToBePresent) {
+
+		WebDriverWait webwait = new WebDriverWait(driver, maxTimeout);
+		webwait.until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.xpath(xpathExpression)), textToBePresent));
+		System.out.println("waitExplicitely - "+ maxTimeout + " - "+ xpathExpression);
+	}
+}
+
+
+
+Test case: Add reusable functions for screenshots, report and Modularized all page level functions and called them in a test case...
+  
+Validation:
+		
+		if(something.equals(somethingelse))
+			System.out.println("Pass");
+		else
+			System.out.println("Fail");
+		
+
+
+
+Hybrid Framework line of code sample: 
+
+
+sd.setText(driver, PO_Register.TEXT_LASTNAME, h.get("LastName")); // Hybrid (Infra level fn + Page Object Xpath + Datapool parameterization)
+
+
+
+ Synchronization :
+(to wait for the application to response in sync with automation code execution)
+
+Static wait: Just wait for specified time 
+Implicit Wait: Waiting for applicaiton to response for the max time specified, but it will not waste the rest of the time
+Dynamic wait: Wait for certain time before maxtime specified, 
+
+Type of waits:
+
+Static wait:
+Thread.sleep(5000); // Static wait ( it will wait staticallly until the timeperiod specified) - 1000 milliseconds = 1 seconds
+
+Implicit wait:		 
+driver.manage().timeouts().implicitlyWait(50, TimeUnit.SECONDS); // Implicit Wait (MaxTimeout = 20 sec) (wait until the page is loaded and continue and will not wait for the rest of the time which will save time.)
+ 
+Dynamic wait: (Wait dynamically until some object comes into existence)		
+WebDriverWait webwait = new WebDriverWait(driver, 60); // Explicit Wait/Dynamic Wait (Waits for a particular element for a conditions) 
+webwait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[contains(@name,'firstName')]")));
+
+//Synchronization methods
+//	Thread.sleep(5000);//Static wait for 5 seconds
+//	driver.manage().wait(5000);//Static wait
+	driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);//Implicit wait
+//	WebDriverWait webwait = new WebDriverWait(driver, 10); // Explicit Wait/Dynamic Wait (Waits for a particular element for a conditions) 
+//		webwait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[contains(@name,'firstName')]")));
+
+
+Demo Project : ToolsQA
+
+Demo URL: http://toolsqa.com/automation-practice-form/
+ 
+
+-setup (OOTB)
+-infrastructure (OOTB - in progress)
+-pageObjects (xPaths)
+-pageFlows (Page navigation)
+-test (Calling page flows' functions + validations + reporting)
+-utils (on the need basis) 
+
+
+testcase calls -> page flow calls ->infrastructure & page objects & data pool  & util
+
+
+	
+Regular Expressions: 
+
+Validating the pattern to identify and manipulate string operations
+
+Example: ^$[0-9]*$
+
+[0-9]   or \d = Digit 
+[a-z] = alphabet
+[a-z]* = 1 or many alphabets
+abc&9e3  -----    [^a-zA-Z&0-9$] +
+
+ = [a-zA-Z0-9@#]  \d
+
+  Single Alphabet  = [a-zA-Z]
+Single Alphabet in lower case = [a-z]  = p, a ,c, q, z
+Single Alphabet in upper case = [A-Z]  = Q
+Single digit  Number = [0-9]   = \d    = 7, 0 , 11 (not a match)
+Single  Alphanumeric Character = = [a-zA-Z0-9]  = 1, a, C
+ Any number of digits (1 or many occurences) = [0-9]+   = 1, 23, 2323232
+ Any number of digits (0 to many occurances) = [0-9]*   = , 2, 2323232
+  
+  Starting position = ^
+  Ending Position = $
+  n-Digit number = [0-9]{n}   = [0-9]{6} = 123456 (match), 2323 (not match)
+  Special Charcter: [^a-zA-Z0-9] [/]   = [@]
+  
+Examples:
+
+Alphabets: Automation = [a-zA-Z]+
+Alphanumeric Characters: Automation123 = [a-zA-Z0-9]+
+Alphanumeric Special characters: Automation_123_Selenium@% = [a-zA-Z0-9_%@#]*
+
+01 02   09 10 11 12
+
+01/02/2019   =  [0-9]{2}[\/][0-9]{2}[\/][0-9]{4}
+  Date: mm/dd/yyyy   12/01/2016 (dob)
+  
+  [0-1][0-9][/][0-3][1-2][/][[19]|[20]][0-9]{2}
+12/02/2010 = [0-1][0-9][\/][0-3][0-9][\/][2][0][0-9]*
+
+Email: someone@somewhere.com/net/org/edu...
+^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$
+
+Valid string : das.shukla@yahoo.com
+Invalid string: das.shukla#yahoo.com
+
+Practice:
+https://regex101.com/
+https://www.regextester.com/
+https://regexr.com/
+
+// Find Using Regular Expression Example:
+
+	private String makeAbsolute(String url, String link) {
+		if (link.matches("http://.*")) {
+			return link;
+		}
+		if (link.matches("/.*") && url.matches(".*$[^/]")) {
+			return url + "/" + link;
+		}
+		if (link.matches("[^/].*") && url.matches(".*[^/]")) {
+			return url + "/" + link;
+		}
+		if (link.matches("/.*") && url.matches(".*[/]")) {
+			return url + link;
+		}
+		if (link.matches("/.*") && url.matches(".*[^/]")) {
+			return url + link;
+		}
+		throw new RuntimeException("Cannot make the link absolute. Url: " + url
+				+ " Link " + link);
+	}
+
+
+
+
+Automation Process:
+
+1. Added all Selenium Jars to Eclipse
+2. Capture XPaths
+3. Start coding
+4. Debugging
+5. Final Execution
+
+// Synchronization (to wait for the applicaiton to response in sync with automation code execution)
+
+Static wait: Just wait for specified time 
+Implicit Wait: Waiting for applicaiton to response for the max time specified, but it will not waste the rest of the time
+Dynamic wait: Wait for certain time before maxtime specified, 
+
+Type of waits:
+
+Static wait:
+Thread.sleep(5000); // Static wait ( it will wait staticallly until the timeperiod specified) - 1000 milliseconds = 1 seconds
+
+Implicit wait:		 
+driver.manage().timeouts().implicitlyWait(50, TimeUnit.SECONDS); // Implicit Wait (MaxTimeout = 20 sec) (wait until the page is loaded and continue and will not wait for the rest of the time which will save time.)
+ 
+Dynamic wait: (Wait dynamically until some object comes into existence)		
+WebDriverWait webwait = new WebDriverWait(driver, 60); // Explicit Wait/Dynamic Wait (Waits for a particular element for a conditions) 
+webwait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[contains(@name,'firstName')]")));
+
+//Synchronization methods
+//	Thread.sleep(5000);//Static wait for 5 seconds
+//	driver.manage().wait(5000);//Static wait
+	driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);//Implicit wait
+//	WebDriverWait webwait = new WebDriverWait(driver, 10); // Explicit Wait/Dynamic Wait (Waits for a particular element for a conditions) 
+//		webwait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[contains(@name,'firstName')]")));
+	
+
+-----------------------------------------------------------------------------------------
+	
+
+Linear Framework - Google Example - Eclipse Code:
+
+package tests;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class Selenium2Example {
+
+	public static void main(String[] args) throws Exception {
+
+		// Configure Chrome Driver	
+		System.setProperty("webdriver.chrome.driver", "C:\\drivers\\chromedriver.exe");
+
+		// Create a new instance of Chrome Driver
+		WebDriver driver = new ChromeDriver();
+
+		try {
+
+
+			//Launch chrome browser and open URL
+			driver.get("https://www.google.com/");
+
+			//XPath for Search text box
+			String searchBox_Xpath = "//input[contains(@name,'q')]";
+			String searchTerm = "Flight Booking";
+
+			//Operate on text box
+			driver.findElement(By.xpath(searchBox_Xpath)).clear();
+			driver.findElement(By.xpath(searchBox_Xpath)).click();
+			driver.findElement(By.xpath(searchBox_Xpath)).sendKeys(searchTerm);
+
+			//Submit the search results
+			String button_Xpath = "//div[contains(@jsname,'VlcLAe')]//input[contains(@name,'btnK') and contains(@value,'Google Search')]";
+			driver.findElement(By.xpath(button_Xpath)).click();
+
+			// Capture the text from Page title
+			String actualPageTitle = driver.getTitle();
+			System.out.println("Title of the page is : "+ actualPageTitle);
+
+			//	driver.wait(1000); //implicit wait
+			Thread.sleep(2000); //static wait
+
+			//Validate the Page time
+
+			String expectedPageTitle = searchTerm+" - Google Search";
+
+			if(expectedPageTitle.equals(actualPageTitle))
+				System.out.println("PASS - Page title is correct!");
+			else
+				System.out.println("FAIL - Page title is NOT correct per the expected \n"+ "Expected="+expectedPageTitle +"\n Actual="+actualPageTitle); 
+
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(e.toString());
+		}
+
+		finally{
+			driver.close();
+			//driver.quit();
+		}
+
+	}
+
+}
+=========================================
+
+Setup:
+
+public static WebDriver launch(String url, String browser, String driverPath){
+		System.out.println("Launched the browser & opened the URL");
+
+		WebDriver driver = null;
+		try {
+
+			switch (browser) {
+			case "chrome":
+				System.setProperty("webdriver.chrome.driver",driverPath);
+				driver = new ChromeDriver();
+				break;
+			case "firefox":
+				System.setProperty("webdriver.gecko.driver",driverPath);
+				driver = new FirefoxDriver();
+				break;
+			case "edge":
+				System.setProperty("webdriver.edge.driver",driverPath);
+				driver = new EdgeDriver();
+				break;
+			case "ie":
+				System.setProperty("webdriver.ie.driver",driverPath);
+				driver = new InternetExplorerDriver();
+				break;
+			case "opera":
+				System.setProperty("webdriver.opera.driver",driverPath);
+				driver = new OperaDriver();
+			default:
+				System.out.println("The mentioned browser type is not defined!");
+				break;
+			}
+			driver.get(url);
+			driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+			driver.manage().window().maximize();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return driver;
+
+	}
+
+ Modularized Google Test:
+/**
+ * Test Case: Linear Framework 
+ * Launch Chrome Browser, 
+ * Open URL: Google.com, 
+ * Search for something, 
+ * Capture Page Title, 
+ * Validation, 
+ * Close browser
+ */
+package tests.modularizedFramework;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import data.Constants;
+import infrastructure.Operations;
+import setup.Setup;
+
+/**
+ * @author sangam
+ * @date 12/16/2018
+ *
+ */
+public class Selenium2GoogleTest {
+
+	public static void main(String[] args) {
+
+		//Instantiations
+		Operations op = new Operations();
+		WebDriver driver = null;
+				
+		//Variable Declarations
+		String searchTerm = "New York Times";
+		String expectedTitle = searchTerm + " - Google Search";// Requirement
+		String actualTitle = null; // Runtime
+		String url = "http://www.google.com";
+		String browser = "chrome";
+		
+		// Browser Setup for Chrome
+			//System.setProperty("webdriver.chrome.driver", "E:/AutomationProjects\\drivers\\chromedriver.exe"); //Change Driver letter accordingly. Use in path: escape char \\ or /
+			//WebDriver driver = new ChromeDriver(); // Instantiate ChromeDriver
+			// driver = op.launchBrowser_Chrome(Constants.CHROMEDRIVER_PATH);
+		try {
+			System.out.println("*** Automation with Selenium WebDriver ***");
+
+			
+			// Launch Chrome Browser
+			//driver.get("http://www.google.com");
+			
+			// Maximize browser window
+			///driver.manage().window().maximize();
+			
+			driver = Setup.launch(url, browser, Constants.CHROMEDRIVER_PATH);	
+
+			// Type search term in Google search box (by identifying object with xPath)
+			op.setText(driver, "//input[@title='Search']", searchTerm);
+			
+			//Click on Google Search button
+			op.clickLink(driver, "//div[@jsname='VlcLAe']/center/input[contains(@value,'Search')]");
+			
+			// Get the page title
+			
+			 actualTitle = driver.getTitle();
+			
+			// Validation
+			 System.out.println("Validation - Page Title");
+			 if(expectedTitle.equals(actualTitle))
+				 System.out.println("Pass - Expected and Actual Page titles are equal");
+			 else
+				 System.out.println("Fail - Expected and Actual Page titles are NOT equal");
+
+			
+
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		finally {
+			driver.close();
+			//driver.quit();
+		}
+		
+
+	}
+
+}
+
+------------------------------------------------------
+
+Modularized ToolsQaTest:
+
+public class Selenium2ToolsqaTest {
+
+public static void main(String[] args) throws Exception {
+		System.out.println("*** Automation with Selenium WebDriver ***");
+
+		//Instantiation
+		WebDriver driver = null;
+		Operations op = new Operations();
+
+		//Variable Declaration
+		String browserType = "chrome";
+		String baseURL = "http://toolsqa.com/automation-practice-form/";
+
+		System.out.println("*** Tools QA Practice Automation Form ***");
+
+		//Prerequisites
+		Setup.launch(baseURL, browserType, Constants.CHROMEDRIVER_PATH);
+
+		// Web Interactions
+		//Partial Link (Reloads the same page)
+		driver.findElement(By.partialLinkText("Partial")).click();
+
+		//Synchronization
+		Thread.sleep(10000); //Static wait
+
+		//Link (Navigates to Web Table page)
+		//driver.findElement(By.linkText("Link Test")).click();
+		op.clickLinkByText(driver, "Link Test");
+
+		//Synchronization
+		//driver.manage().timeouts().implicitlyWait(40, TimeUnit.SECONDS);
+		op.waitImplicitely(driver, 40);
+
+		// Web Table
+
+		System.out.println("Automation Practice Table");
+
+		String tableHeader1 =   op.getWidgetText(driver, "//table/tbody/tr[1]/th");
+		String tableData11 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[1]/td[1]"); 
+		String tableData12 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[1]/td[2]"); 
+		String tableData13 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[1]/td[3]"); 
+		String tableData14 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[1]/td[4]"); 
+		String tableData15 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[1]/td[5]"); 
+		String tableData16 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[1]/td[6]"); 
+
+		String tableHeader2 =   op.getWidgetText(driver, "//table/tbody/tr[2]/th");
+		String tableData21 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[2]/td[1]"); 
+		String tableData22 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[2]/td[2]"); 
+		String tableData23 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[2]/td[3]"); 
+		String tableData24 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[2]/td[4]"); 
+		String tableData25 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[2]/td[5]"); 
+		String tableData26 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[2]/td[6]"); 
+
+		String tableHeader3 = op.getWidgetText(driver, "//table/tbody/tr[3]/th");
+		String tableData31 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[3]/td[1]"); 
+		String tableData32 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[3]/td[2]"); 
+		String tableData33 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[3]/td[3]"); 
+		String tableData34 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[3]/td[4]"); 
+		String tableData35 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[3]/td[5]"); 
+		String tableData36 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[3]/td[6]"); 
+
+		String tableHeader4 = op.getWidgetText(driver, "//table/tbody/tr[4]/th");
+		String tableData41 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[4]/td[1]"); 
+		String tableData42 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[4]/td[2]"); 
+		String tableData43 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[4]/td[3]"); 
+		String tableData44 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[4]/td[4]"); 
+		String tableData45 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[4]/td[5]"); 
+		String tableData46 =	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[4]/td[6]"); 
+
+		//driver.findElement(By.xpath("//div[@id='content']//table//tbody/tr[4]/td[6]")).click();
+
+		//String tableText=	op.getWidgetText(driver, "//div[@id='content']//table//tbody/tr[1]/td[1]"); 
+		String[][] tableData = new String[10][10]; //max rows = 10, max cols = 10
+		for (int i = 1; i <= 4; i++) {
+			for (int j = 1; j <= 6; j++) {
+				//	 	tableData[i][j] =  	op.getWidgetText(driver, PO_ToolsQA.text_Table(i, j)); 
+				tableData[i][j] = op.getText(driver, "//div[@id='content']//table//tbody/tr["+i+"]/td["+j+"]"); 
+				//	op.clickLink(driver, "//div[@id='content']//table//tbody/tr[1]/td[6]");
+				//	System.out.print(tableData[i][j] +"	");
+			}
+			//System.out.println();
+		}
+
+
+		for (int i = 1; i <= 4; i++) {
+			for (int j = 1; j <= 6; j++) {
+				System.out.print(tableData[i][j] +", ");
+			}
+			System.out.println();
+		}
+
+		//Validation
+		ReportUtils.compare("UAE", tableData11);
+
+		//Navigate back
+		driver.navigate().back();//Back
+
+		System.out.println("Navigated back..");
+
+		//Synchronization
+		op.waitImplicitely(driver, 30);
+		
+		// Actions
+		/*	Actions actions = new Actions(driver);
+		WebElement wel = driver.findElement(By.xpath(""));
+		actions.moveToElement(wel).contextClick().click().doubleClick().build().perform();
+		 */ 
+		
+		//Text boxes
+		op.setText(driver, "//input[contains(@name,'firstname')]", "Selenium");
+		op.setText(driver, "//input[contains(@name,'lastname')]", "Automation");
+
+		// Radio button
+		op.clickRadiobutton(driver, "//input[contains(@name,'sex') and contains(@value,'Male')]");
+		op.clickRadiobutton(driver, "//input[contains(@name,'exp') and contains(@value,'7')]");
+
+		//Text box
+		op.setTextById(driver, "datepicker", DateUtils.timestamp("MM/dd/yyyy"));
+
+		// Checkboxes
+		op.clickCheckbox(driver, "//input[contains(@value,'Manual Tester')]");
+		op.clickCheckbox(driver, "//input[contains(@value,'Automation Tester')]");
+
+		//Upload & Browse File (Robot / Actions / WGet / AutoIT / ExecRuntime )
+		op.clickLink(driver, "//input[@id='photo' and @name='photo']");
+ 
+		//Browse File
+			String filePath = "C:\\Users\\sanga\\OneDrive\\Documents\\Automation_Class\\Images\\profile.png";
+			new KeyboardUtils().type(filePath);	
+			new KeyboardUtils().Key_Enter();
+
+			Thread.sleep(2000);
+			ReportingUtils.reportResult("Pass", "ToolsQA", "Automation Practice Form Successful!");
+
+		System.out.println("Uploaded the file.");
+
+		//Download File
+		op.clickLink(driver, "//a[text()='Test File to Download']");
+
+		// Checkbox
+		op.clickCheckbox(driver, "//input[contains(@value,'Selenium Webdriver')]");
+
+		//Dropdown
+		op.selectDropdown(driver, "//select[contains(@id,'continents')]", "North America");
+		
+		//Combobox (Multiple selection)
+		op.selectDropdown(driver, "//select[contains(@id,'selenium_commands')]", "Browser Commands");
+		op.selectDropdown(driver, "//select[contains(@id,'selenium_commands')]", "Navigation Commands");
+		op.selectDropdown(driver, "//select[contains(@id,'selenium_commands')]", "WebElement Commands");
+
+		//Button (Reloads the same page)
+		op.clickLink(driver, "//button[contains(@id,'submit')]");
+	
+		//Synchronization (Explicit Wait)
+		op.waitExplicitely(driver, 50, "//div[@class='branding']/a/img[contains(@src,'http://20tvni1sjxyh352kld2lslvc.wpengine.netdna-cdn.com/wp-content/uploads/2014/08/Toolsqa.jpg')]");
+		
+		WebDriverWait wait = new WebDriverWait(driver, 50);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='branding']/a/img[contains(@src,'http://20tvni1sjxyh352kld2lslvc.wpengine.netdna-cdn.com/wp-content/uploads/2014/08/Toolsqa.jpg')]"))); 
+		wait.until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.xpath("")), "Expected text"));
+
+		//Label (Capture Text)
+		String capturedText = op.getText(driver, "//label/span[contains(@class,'bcd')]");
+
+		//Wait
+		Thread.sleep(10000);
+
+		//Close Browser-Driver Instance
+		driver.close(); //single instance
+		//driver.quit(); //all instances
+
+
+	}
+
+}
+
+
+Console output logs:
+
+*** Start ToolsQA Automation Test ***
+Test Case Details:
+Complete TestCase Name = tests.ToolsQA_HybridFramework
+All files in C:\Selenium_Logs\Screenshots\ with extension .jpg got deleted!
+All captions cleared @ C:\Selenium_Logs\Screenshots\Captions.properties
+Property is read for browser=chrome
+Starting ChromeDriver 74.0.3729.6 (255758eccf3d244491b8a1317aa76e1ce10d57e9-refs/branch-heads/3729@{#29}) on port 42919
+Only local connections are allowed.
+Please protect ports used by ChromeDriver and related test frameworks to prevent access by malicious code.
+Jun 16, 2019 6:15:14 PM org.openqa.selenium.remote.ProtocolHandshake createSession
+INFO: Detected dialect: OSS
+Get Text - //div/h1[contains(text(),'Automation Practice Form')] - Automation Practice Form
+Get Text - //form[contains(@class,'form-horizontal')]/fieldset/legend/strong[contains(text(),'PERSONAL INFORMATION')] - PERSONAL INFORMATION
+Clicked Link - //a[contains(@title,'Automation Practice Form')]
+waitImplicitely - 50
+Clicked Link - //a[contains(@title,'Table')]
+Get Text - //table/thead/tr/th[1] - Structure
+Get Text - //table/thead/tr/th[2] - Country
+Get Text - //table/thead/tr/th[3] - City
+Get Text - //table/thead/tr/th[4] - Height
+Get Text - //table/thead/tr/th[5] - Built
+Get Text - //table/thead/tr/th[6] - Rank
+Get Text - //table/tbody/tr[1]/th - Burj Khalifa
+Get Text - //table/tbody/tr[1]/td[1] - UAE
+Get Text - //table/tbody/tr[1]/td[2] - Dubai
+Get Text - //table/tbody/tr[1]/td[3] - 829m
+Get Text - //table/tbody/tr[1]/td[4] - 2010
+Get Text - //table/tbody/tr[1]/td[5] - 1
+Get Text - //table/tbody/tr[2]/th - Clock Tower Hotel
+Get Text - //table/tbody/tr[2]/td[1] - Saudi Arabia
+Get Text - //table/tbody/tr[2]/td[2] - Mecca
+Get Text - //table/tbody/tr[2]/td[3] - 601m
+Get Text - //table/tbody/tr[2]/td[4] - 2012
+Get Text - //table/tbody/tr[2]/td[5] - 2
+Get Text - //table/tbody/tr[3]/th - Taipei 101
+Get Text - //table/tbody/tr[3]/td[1] - Taiwan
+Get Text - //table/tbody/tr[3]/td[2] - Taipei
+Get Text - //table/tbody/tr[3]/td[3] - 509m
+Get Text - //table/tbody/tr[3]/td[4] - 2004
+Get Text - //table/tbody/tr[3]/td[5] - 3
+Get Text - //table/tbody/tr[4]/th - Financial Center
+Get Text - //table/tbody/tr[4]/th - Financial Center
+Get Text - //table/tbody/tr[4]/td[2] - Shanghai
+Get Text - //table/tbody/tr[4]/td[3] - 492m
+Get Text - //table/tbody/tr[4]/td[4] - 2008
+Get Text - //table/tbody/tr[4]/td[5] - 4
+Get Text - //div[@id="content"]/table/tfoot/tr[1]/th[1] - Total
+Get Text - //div[@id="content"]/table/tfoot/tr[1]/td[1] - 4 buildings
+PASS ~ Test Step Passed for ToolsQA :: Automation Practice Table Successful!
+Property is set for Caption0=Automation Practice Table Successful!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0000.jpg
+Set Text - //input[contains(@name,'firstname')] - Sangam
+Set Text - //input[contains(@name,'lastname')] - Y
+Selected Radiobutton - //input[contains(@value,'Male')]
+Selected Radiobutton - //input[contains(@id,'exp-6')]
+Set Text - //input[contains(@id,'datepicker')] - 06/09/2019
+Selected Checkbox - //input[contains(@value,'Automation')]
+Clicked Link - //input[contains(@id,'photo')]
+PASS ~ Test Step Passed for ToolsQA :: Automation Practice Form Successful!
+Property is set for Caption1=Automation Practice Form Successful!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0001.jpg
+Clicked Link - //a[contains(text(),'Test File')]
+Selected Checkbox - //input[contains(@name,'tool') and @value='Selenium Webdriver']
+Selected Dropdown - //select[contains(@name,'continents')] - Europe
+Browser Commands
+Wait Commands
+Selected Dropdown - //select[contains(@id,'selenium_commands')] - Browser Commands
+Selected Dropdown - //select[contains(@id,'selenium_commands')] - Wait Commands
+PASS ~ Test Step Passed for ToolsQA :: Automation Practice Form Successful!
+Property is set for Caption2=Automation Practice Form Successful!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0002.jpg
+waitImplicitely - 20
+Clicked Link - //button[contains(@id,'submit')]
+*** End ToolsQA Automation Test ***
+
+====================================================
+
+Hybrid Framework Example (Page Objects -> Page Flows -> Test Case) 
+JUnit Test - PhpTravels test:
+
+package tests.hybridFramework;
+
+
+
+JUnit Test case
+
+public class Selenium2PhpTravelsJUnitTest {
+	//Instantiations
+	WebDriver driver = null;
+	Operations op = new Operations();
+
+	//Variable Declarations
+	String url = "https://www.phptravels.net/supplier";
+	String browser = "chrome";
+
+	@Before
+	public void prerequisites(){
+		driver = Setup.launch(url, browser, Constants.CHROMEDRIVER_PATH);
+	}
+
+	@After
+	public void postrequisites(){
+		//Setup.teardown(driver);
+	}
+
+	@Test
+	public void testPhpTravels() throws Exception{
+		LogUtils.log("Php Travels Test");
+
+		//Home
+	//	new Home().supplier(driver);
+		
+		op.waitImplicitly(driver, 10);
+
+		// Login Panel
+		new Login().loginPanel(driver);
+		
+		//Quick Bookings
+		new QuickBookingsPage().quickbookings(driver);
+		new QuickBookingsPage().popupService(driver);
+		new QuickBookingsPage().formBooking(driver);
+
+	}
+
+}
+
+Logs:
+
+Launched the browser & opened the URL
+Starting ChromeDriver 2.45.615291 (ec3682e3c9061c10f26ea9e5cdcf3c53f3f74387) on port 23087
+Only local connections are allowed.
+Dec 27, 2018 9:42:10 PM org.openqa.selenium.remote.ProtocolHandshake createSession
+INFO: Detected dialect: OSS
+[12/27/18 21:42:20.514] | Php Travels Test
+[12/27/18 21:42:21.524] | --- waitImplicitly - 10Sec. ... 
+DateTime is: 122718214221
+Folder created @ C:\AutomationProjects\TestAutomation_Selenium_logs\tests.hybridFramework.Selenium2PhpTravelsJUnitTest_122718214221
+$Property get: TestDataPool
+$Property get: TestDataPool_Network
+$Property get: TestDataPool_Local
+$Property get: datapool
+$Property get: namesDBPath
+Property is read for phptravelSupplierUserName=supplier@phptravels.com
+Property is read for phptravelSupplierPassword=demosupplier
+[12/27/18 21:42:25.477] | + OK : -> setText : //form[@method='POST']/div/input[@name='email'] = supplier@phptravels.com
+[12/27/18 21:42:27.910] | + OK : -> setText : //form[@method='POST']/div/input[@name='password'] = demosupplier
+[12/27/18 21:42:28.625] | + OK : clickLink - //button[@type='submit']
+[12/27/18 21:42:41.197] | + OK : clickLink - //button[contains(@data-target,'quickbook')]
+[12/27/18 21:42:41.255] | --- waitImplicitly - 5Sec. ... 
+[12/27/18 21:42:43.743] | + OK - selectDropdown -  - //select[contains(@id,'servicetype')] ... 
+[12/27/18 21:42:51.268] | + OK : clickLink - //button[text()='Next']
+Date is 12/27/2018
+[12/27/18 21:43:01.421] | + OK : -> setText : //input[@name='checkin' and @id='Hotels'] = 12/27/2018
+[12/27/18 21:43:05.134] | + OK : -> setText : //input[@name='checkout' and @placeholder = 'Date'] = 12/29/2018
+[12/27/18 21:43:05.568] | - getText - //input[@name='stay'] =  ... 
+[12/27/18 21:43:05.798] | ~~~~~~~~~~~~~~~ Validation ~~~~~~~~~~~~~~~
+Fail - ExpectedResult :2 is not same as ActualResult: 
+[12/27/18 21:43:07.854] | + OK : -> setText : //input[@id='roomtotal'] = 80
+[12/27/18 21:43:09.088] | + OK : clickLink - //input[@value='Book Now']
+
+========================
+ 
+ 
+ Debugging: 
+
+If there are any exceptions thrown while executing the automation script, we need to go though the console logs and investigate where the exeception occurred and then fix it.
+ 
+ at infra.SeleniumDescriptive.clickLink(SeleniumDescriptive.java:21)
+	at pages.Register.registration(Register.java:69)
+	at flows.MercuryToursFlow.mercuryTours(MercuryToursFlow.java:17)
+	at test.modularizedFramework.TC1_RegisterLoginPurchaseValidate.main(TC1_RegisterLoginPurchaseValidate.java:28)
+
+
+#######################################################
+
+
+Project : DemoAUT
+
+Demo URL: http://www.newtours.demoaut.com/
+HOMEWORK: Capture all XPaths from demoAUT site
+
+-setup (OOTB)
+-infrastructure (OOTB - in progress)
+-pageObjects (xPaths)
+-pageFlows (Page navigation)
+-test (Calling page flows' functions + validations + reporting)
+-utils (on the need basis) 
+
+
+testcase calls -> page flow calls ->infrastructure & page objects & data pool  & util
+
+Modules:
+1. Registration
+2. Sign-in
+3. Flight Finder
+4. Select Flight
+5. Book A Flight
+6. Validate Total Price
+7. Flight Confirmation
+8. Logout
+
+ 
+Modularized Framework - DemoAUT Example - Eclipse Code:
+
+package pageObjects;
+
+public class Registration {
+	
+	public static final String link_Register = "//a[contains(text(),'REGISTER')]";
+	public static final String textBox_FirstName = "//input[contains(@name,'firstName')]";
+	public static final String textBox_LastName = "//input[contains(@name,'lastName')]";
+	public static final String textBox_Phone = "//input[contains(@name,'phone')]";
+	public static final String textBox_Email = "//input[contains(@name,'userName')]";
+	public static final String textBox_Address1 = "//input[contains(@name,'address1')]";
+	public static final String textBox_Address2 = "//input[contains(@name,'address2')]";
+
+	public static final String textBox_City = "//input[contains(@name,'city')]";
+	public static final String textBox_StateProvince = "//input[contains(@name,'state')]";
+	public static final String textBox_PostalCode = "//input[contains(@name,'postalCode')]";
+	public static final String dropdown_Country = "//select[contains(@name,'country')]";
+
+	// User Information
+	public static final String textBox_UserName = "//input[contains(@name,'email')]";
+	public static final String textBox_Password = "//input[contains(@name,'password')]";
+	public static final String textBox_ConfirmPassword = "//input[contains(@name,'confirmPassword')]";
+
+	public static final String button_Submit = "//input[contains(@name,'register')]";
+	
+	//Confirmation
+	public static final String text_Note ="//b[contains(text(),'Note:')]";
+	
+ }
+
+
+package flows;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import pageObjects.*;
+
+public class Register {
+	
+String expectedNote="",actualVal="";
+String expectedUserName ="Username2";
+	public void registration(WebDriver driver) throws Exception{
+	
+	//Click Register link
+	driver.findElement(By.xpath(Registration.link_Register)).click();
+	
+	// Contact Information
+	
+	driver.findElement(By.xpath(Registration.textBox_FirstName)).sendKeys("John");
+	driver.findElement(By.xpath(Registration.textBox_LastName)).sendKeys("Doe");
+	driver.findElement(By.xpath(Registration.textBox_Phone)).sendKeys("122223333");
+	driver.findElement(By.xpath(Registration.textBox_Email)).sendKeys("user@domain.com");
+
+
+	
+	//Mailing Information
+	driver.findElement(By.xpath(Registration.textBox_Address1)).sendKeys("123 Main St");
+	driver.findElement(By.xpath(Registration.textBox_Address2)).sendKeys("Suite# A");
+	driver.findElement(By.xpath(Registration.textBox_City)).sendKeys("New York City");
+	driver.findElement(By.xpath(Registration.textBox_StateProvince)).sendKeys("New York");
+	driver.findElement(By.xpath(Registration.textBox_PostalCode)).sendKeys("11370");
+	
+	//Selecting Dropdown value
+	WebElement ele = driver.findElement(By.xpath(Registration.dropdown_Country));
+	Select sel = new Select(ele);
+	sel.selectByVisibleText("UNITED STATES");
+	
+	//User Information
+	WebElement we = driver.findElement(By.xpath(Registration.textBox_UserName));
+	we.sendKeys(expectedUserName);
+	
+	driver.findElement(By.xpath(Registration.textBox_Password)).sendKeys("password123");
+	driver.findElement(By.xpath(Registration.textBox_ConfirmPassword)).sendKeys("password123");
+	driver.findElement(By.xpath(Registration.button_Submit)).click();
+
+	//Synchronization
+//	Thread.sleep(5000);//Static wait
+//	driver.manage().wait(5000);//Static wait
+	driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);//Implicit wait
+//	WebDriverWait webwait = new WebDriverWait(driver, 10); // Explicit Wait/Dynamic Wait (Waits for a particular element for a conditions) 
+//		webwait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[contains(@name,'firstName')]")));
+	
+		
+		//Confirmation
+	String expectedNote = "Note: Your user name is Username2.";
+
+	String actualNote = driver.findElement(By.xpath(Registration.text_Note)).getText();
+	String actualUserName = actualNote.substring(24, 33);
+	System.out.println("Actual Note: "+ actualNote);
+	System.out.println("Actual UserName: "+ actualUserName);
+
+	
+	//Note Validation
+	if(expectedNote.equals(actualNote))
+		System.out.println("PASS - "+"The Note : "+ actualNote +" is matching!");
+	else
+		System.out.println("FAIL - Not Matching \n"+ "Expected Note: "+expectedNote + "\n Actual Note: "+actualNote);
+
+System.out.println("#################################################");
+	
+	//UserName validation
+	if(expectedUserName.equals(actualUserName))
+		System.out.println("PASS - "+"The expected Username : \n"+ expectedUserName +" is matching!");
+	else
+		System.out.println("FAIL - Not Matching \n"+ "Expected Username: "+expectedUserName +"\n Actual Username: "+actualUserName);
+
+	}
+
+}
+
+package flows;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.Select;
+
+import pageObjects.FlightFinder;
+
+public class Flights {
+	
+public void flightFinder(WebDriver driver){
+	// Clicking on Flights link
+	driver.findElement(By.xpath(FlightFinder.link_Flights)).click();
+	driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+	
+	//Flight Finder
+	//driver.findElement(By.xpath(FlightFinder.radiobutton_FlightTypeOneway)).click();
+	driver.findElement(By.xpath(FlightFinder.radiobutton_FlightTypeRoundtrip)).click();
+
+	Select sel1 = new Select(driver.findElement(By.xpath(FlightFinder.dropdown_Passengers)));
+	sel1.selectByVisibleText("2");
+	
+	Select sel2 = new Select(driver.findElement(By.xpath(FlightFinder.dropdown_DepartFrom)));
+	sel2.selectByVisibleText("New York");
+	
+	Select sel3 = new Select(driver.findElement(By.xpath(FlightFinder.dropdown_OnMonth)));
+	sel3.selectByVisibleText("November");
+	
+	Select sel4 = new Select(driver.findElement(By.xpath(FlightFinder.dropdown_OnDay)));
+	sel4.selectByValue("25");
+	
+	Select sel5 = new Select(driver.findElement(By.xpath(FlightFinder.dropdown_ArrivingIn)));
+	sel5.selectByVisibleText("Paris");
+	
+// Preferences
+	
+	driver.findElement(By.xpath(FlightFinder.radiobutton_ServiceClassFirstClass)).click();
+	
+	driver.findElement(By.xpath(FlightFinder.button_Continue)).click();
+	
+}
+
+}
+
+package testcases;
+
+import org.openqa.selenium.WebDriver;
+
+import flows.Flights;
+import flows.Register;
+import flows.SelectFlightDepartReturn;
+import flows.SignOn;
+import infrastructure.Setup;
+
+public class TC1_RegisterAndBookFlight {
+
+	public static void main(String[] args) {
+		
+		//Variable Declarations
+		WebDriver driver = null;
+		
+		try {
+			//Setup
+			Setup setup = new Setup();
+			String url = "http://www.newtours.demoaut.com/";
+			
+			//Setup the WebDriver
+			 driver = setup.launchBrowser(url);
+			
+			//Registration
+			Register register = new Register();
+			register.registration(driver);
+			
+			/*//SignIn
+			SignOn signin = new SignOn();
+			signin.signin(driver);
+			*/
+			
+			//Flight Finder
+			Flights flights = new Flights();
+			flights.flightFinder(driver);
+			
+			//Select Flight
+			new SelectFlightDepartReturn().departFlight(driver);
+			new SelectFlightDepartReturn().continueFlight(driver);;
+
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally{
+	//		driver.close();
+		}
+
+		
+		
+	}
+
+}
+
+
+Infrastructure:
+package infrastructure;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
+
+import utils.LogUtils;
+
+/**
+ * @author Sangam
+ * Reusable methods to perform operations on different objects using the WebDriver
+ *
+ */
+public class Operations {
+	
+	/**
+	 * This method will click on Link or Button with the given XPath
+	 * @param driver
+	 * @param xpathLocator
+	 */
+	public void clickLink(WebDriver driver, String xpathLocator){
+		try {
+			driver.findElement(By.xpath(xpathLocator)).click();
+			LogUtils.log("Clicked on the link for "+ xpathLocator);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * This method will click on Radio-button with the given XPath
+	 * @param driver
+	 * @param xpathLocator
+	 */
+	public void clickRadiobutton(WebDriver driver, String xpathLocator){
+		try {
+			driver.findElement(By.xpath(xpathLocator)).click();
+			LogUtils.log("Clicked on the radiobutton for "+ xpathLocator);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * This method will click on checkbox with the given XPath
+	 * @param driver
+	 * @param xpathLocator
+	 */
+	public void clickCheckbox(WebDriver driver, String xpathLocator){
+		try {
+			driver.findElement(By.xpath(xpathLocator)).click();
+			LogUtils.log("Clicked on the checkbox for "+ xpathLocator);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	/**
+	 * This method will type text in a textbox with the given XPath
+	 * @param driver
+	 * @param xpathLocator
+	 * @param inputText
+	 */
+	public void setText(WebDriver driver, String xpathLocator, String inputText){
+		try {
+			driver.findElement(By.xpath(xpathLocator)).clear();
+			driver.findElement(By.xpath(xpathLocator)).sendKeys(inputText);
+			LogUtils.log("Set text "+ inputText +" for "+ xpathLocator);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/**
+	 * This method will select a desired value from dropdown for the given xpath
+	 * @param driver
+	 * @param xpathLocator
+	 * @param inputText
+	 */
+	public void selectDropdown(WebDriver driver, String xpathLocator, String inputText){
+		try {
+			WebElement we = driver.findElement(By.xpath(xpathLocator));
+			Select sel = new Select(we);
+			sel.selectByVisibleText(inputText);
+			LogUtils.log("Selected value from dropdown "+inputText+ " for "+ xpathLocator);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * This method will wait implicitly for the specified time in seconds
+	 * @param driver
+	 * @param maxTimeOutInSecond
+	 */
+	public void waitImplicitely(WebDriver driver, int maxTimeOutInSecond){
+		try {
+			driver.manage().timeouts().implicitlyWait(maxTimeOutInSecond, TimeUnit.SECONDS);
+			LogUtils.log("Waiting implicitely for "+maxTimeOutInSecond + " seconds");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * This method will return me text for a given xpath
+	 * @param driver
+	 * @param xPathLocator
+	 * @return
+	 */
+	public String getText(WebDriver driver, String xPathLocator){
+	String text = null;
+		try {
+		 text = driver.findElement(By.xpath(xPathLocator)).getText();
+		 LogUtils.log("Getting text = "+text+ " for "+ xPathLocator);
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	return text;
+
+	}
+	
+	
+
+}
+
+
+	
+========================================================
+Utility Methods:
+
+ Password Utils (Encrypt + Decrypt), Date Utils (Timestamp + Difference between dates) , Enhancing Console Logs with timestamp, Framework debugging with all drivers (chrome, firefox, opera, safari, ie/edge)
+ 
+ Cross-browser Testing:
+ 
+ Chrome - Compatible
+ Firefox - Compatible
+ Opera - Not running  (org.openqa.selenium.WebDriverException: java.net.SocketException: Connection reset)
+ Safari - Not compatible ( org.openqa.selenium.WebDriverException: SafariDriver requires Safari 10 running on OSX El Capitan or greater.)
+ IE - Not recognizing web elements [org.openqa.selenium.NoSuchElementException: Unable to find element with xpath == //a[contains(text(),'REGISTER')] (WARNING: The server did not provide any stacktrace information)
+ 
+#####################################################################3
+ 
+  
+CONSOLE LOGS:  
+
+Advantage: 
+Every action we perform on the application is logged
+Reported easily
+Readability is achieved
+
+DateTime is: 122918140806
+Folder created @ C:\AutomationProjects\TestAutomation_Selenium_logs\null_122918140806
+$Property get: TestDataPool
+$Property get: TestDataPool_Network
+$Property get: TestDataPool_Local
+$Property get: datapool
+$Property get: namesDBPath
+Property is read for browser=chrome
+Test Started @ 12292018 140808
+Launched the browser & opened the URL
+Starting ChromeDriver 2.45.615291 (ec3682e3c9061c10f26ea9e5cdcf3c53f3f74387) on port 17636
+Only local connections are allowed.
+Dec 29, 2018 2:08:19 PM org.openqa.selenium.remote.ProtocolHandshake createSession
+INFO: Detected dialect: OSS
+
+******************** Registration ********************
+
+[12/29/18 14:08:24.265] | + OK : clickLink - //a[contains(text(),'REGISTER')]
+[12/29/18 14:08:24.284] | --- waitImplicitly - 10Sec. ... 
+- getWebElement - [[ChromeDriver: chrome on XP (abe3cf24a141bd45980509468f557e99)] -> xpath: //input[contains(@name,'firstName')]] - //input[contains(@name,'firstName')]
+[12/29/18 14:08:26.053] | + OK : -> setText : //input[contains(@name,'firstName')] = Sangam
+[12/29/18 14:08:27.555] | + OK : -> setText : //input[contains(@name,'lastName')] = Yo
+[12/29/18 14:08:29.277] | + OK : -> setText : //input[contains(@name,'phone')] = 3473434434
+[12/29/18 14:08:31.753] | + OK : -> setText : //input[contains(@name,'userName')] = sam@gmail.com
+- getWebElement - [[ChromeDriver: chrome on XP (abe3cf24a141bd45980509468f557e99)] -> xpath: //input[contains(@name,'address1')]] - //input[contains(@name,'address1')]
+[12/29/18 14:08:34.260] | + OK : -> setText : //input[contains(@name,'address1')] = 123 Main St
+[12/29/18 14:08:35.725] | + OK : -> setText : //input[contains(@name,'address2')] = 
+[12/29/18 14:08:37.801] | + OK : -> setText : //input[contains(@name,'city')] = New York City
+[12/29/18 14:08:39.549] | + OK : -> setText : //input[contains(@name,'state')] = New York
+[12/29/18 14:08:41.256] | + OK : -> setText : //input[contains(@name,'postalCode')] = 11370
+- getWebElement - [[ChromeDriver: chrome on XP (abe3cf24a141bd45980509468f557e99)] -> xpath: //select[contains(@name,'country')]] - //select[contains(@name,'country')]
+[12/29/18 14:08:43.103] | + OK : -> setText : //input[contains(@name,'email')] = Username2
+[12/29/18 14:08:45.089] | + OK : -> setText : //input[contains(@name,'password')] = password123
+[12/29/18 14:08:47.187] | + OK : -> setText : //input[contains(@name,'confirmPassword')] = password123
+Done ~ Test Step is Done for Registration :: Registration is successful!
+Property is set for Caption0=Registration is successful!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0000.jpg
+[12/29/18 14:08:50.231] | + OK : clickLink - //input[contains(@name,'register')]
+[12/29/18 14:08:50.282] | --- waitImplicitly - 20Sec. ... 
+[12/29/18 14:08:50.615] | Waiting explicitly for 10 seconds for //b[contains(text(),'Note:')]
+[12/29/18 14:08:50.759] | - getText - //b[contains(text(),'Note:')] = Note: Your user name is Username2. ... 
+Actual Note: Note: Your user name is Username2.
+Actual UserName: Username2
+PASS ~ Test Step Passed for Note Validation :: The Note : Note: Your user name is Username2. is matching!
+Property is set for Caption1=The Note : Note: Your user name is Username2. is matching!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0001.jpg
+PASS ~ Test Step Passed for UserName Validation :: The expected Username : 
+Username2 is matching!
+Property is set for Caption2=The expected Username : 
+Username2 is matching!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0002.jpg
+
+******************** Flight Finder ********************
+
+[12/29/18 14:08:52.376] | + OK : clickLink - //a[contains(text(),'Flights')]
+[12/29/18 14:08:52.384] | --- waitImplicitly - 10Sec. ... 
+- getWebElement - [[ChromeDriver: chrome on XP (abe3cf24a141bd45980509468f557e99)] -> xpath: //input[contains(@name,'tripType') and contains(@value,'oneway')]] - //input[contains(@name,'tripType') and contains(@value,'oneway')]
+[12/29/18 14:08:53.976] | + OK - selectDropdown -  - //select[contains(@name,'passCount')] ... 
+[12/29/18 14:08:55.321] | + OK - selectDropdown -  - //select[contains(@name,'fromPort')] ... 
+[12/29/18 14:08:56.665] | + OK - selectDropdown -  - //select[contains(@name,'fromMonth')] ... 
+[12/29/18 14:08:57.969] | + OK - selectDropdown -  - //select[contains(@name,'fromDay')] ... 
+[12/29/18 14:08:59.294] | + OK - selectDropdown -  - //select[contains(@name,'toPort')] ... 
+[12/29/18 14:08:59.562] | + OK : clickRadioButton - //input[contains(@value,'First')]
+Done ~ Test Step is Done for Flight Finder :: Flight Finder is successful!
+Property is set for Caption3=Flight Finder is successful!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0003.jpg
+[12/29/18 14:09:00.776] | + OK : clickLink - //input[contains(@name,'findFlights')]
+
+******************** departFlight ********************
+
+[12/29/18 14:09:01.055] | + OK : clickRadioButton - //input[contains(@name,'outFlight') and contains(@value,'Unified Airlines$363')]
+
+******************** returnFlight ********************
+
+[12/29/18 14:09:01.328] | + OK : clickRadioButton - //input[contains(@name,'inFlight') and contains(@value,'Blue Skies Airlines$631')]
+
+******************** continueFlight ********************
+
+Done ~ Test Step is Done for Select Flightr :: Select Flight is successful!
+Property is set for Caption4=Select Flight is successful!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0004.jpg
+[12/29/18 14:09:03.007] | + OK : clickLink - //input[contains(@name,'reserveFlights') and contains(@src,'continue')]
+
+********************* validatePrice *********************
+
+[12/29/18 14:09:03.257] | - getText - //table/tbody/tr[3]/td[3] = 281 ... 
+[12/29/18 14:09:03.718] | - getText - //table/tbody/tr[6]/td[3] = 273 ... 
+[12/29/18 14:09:04.008] | - getText - //table/tbody/tr[5]/td/form/table/tbody/tr[2]/td/table/tbody/tr[7]/td[2] = 2 ... 
+[12/29/18 14:09:04.260] | - getText - //table/tbody/tr[5]/td/form/table/tbody/tr[2]/td/table/tbody/tr[8]/td[2] = $91 ... 
+[12/29/18 14:09:04.555] | - getText - //table/tbody/tr[5]/td/form/table/tbody/tr[2]/td/table/tbody/tr[9]/td[2] = $1199 ... 
+PASS ~ Test Step Passed for Book A Flight - Total Price :: Total price displayed is correct!
+Property is set for Caption5=Total price displayed is correct!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0005.jpg
+
+********************* passengersInfo *********************
+
+[12/29/18 14:09:07.404] | + OK : -> setText : //input[contains(@name,'passFirst0')] = Sangam
+[12/29/18 14:09:09.079] | + OK : -> setText : //input[contains(@name,'passLast0')] = Yo
+[12/29/18 14:09:10.860] | + OK : -> setText : //input[contains(@name,'passFirst1')] = Ram
+[12/29/18 14:09:12.493] | + OK : -> setText : //input[contains(@name,'passLast1')] = Yoyo
+
+********************* creditCardInfo *********************
+
+[12/29/18 14:09:13.810] | + OK - selectDropdown -  - //select[contains(@name,'creditCard')] ... 
+[12/29/18 14:09:15.732] | + OK : -> setText : //input[contains(@name,'creditnumber')] = 1234567890123456
+[12/29/18 14:09:17.018] | + OK - selectDropdown -  - //select[contains(@name,'cc_exp_dt_mn')] ... 
+[12/29/18 14:09:18.307] | + OK - selectDropdown -  - //select[contains(@name,'cc_exp_dt_yr')] ... 
+- clickCheckbox -  - //table/tbody/tr[9]/td[2]//input[contains(@name,'ticketLess') and contains(@value,'checkbox')]
+Done ~ Test Step is Done for Book A Flight :: Book A Flight is successful!
+Property is set for Caption6=Book A Flight is successful!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0006.jpg
+[12/29/18 14:09:19.645] | + OK : clickLink - //input[@name='buyFlights']
+
+********************** validateFlightConfirmation **********************
+
+[12/29/18 14:09:19.833] | - getText - //table/tbody/tr[3]/td/font = New York to Paris
+11/25/2018 @ 11:24 w/ Unified Airlines 363
+First
+$281 each ... 
+[12/29/18 14:09:19.981] | - getText - //table/tbody/tr[5]/td/font = Paris to New York
+12/29/2018 @ 14:30 w/ Blue Skies Airlines 631
+First
+$273 each ... 
+[12/29/18 14:09:20.110] | - getText - //table/tbody/tr[7]/td/font = 2 passengers ... 
+[12/29/18 14:09:20.259] | - getText - //table/tbody/tr[1]/td[2]/font/font/font/b/font = $91 USD ... 
+[12/29/18 14:09:20.379] | - getText - //table/tbody/tr[2]/td[2]/font/b/font/font/b/font = $1199 USD ... 
+departFlightPrice = New York to Paris
+11/25/2018 @ 11:24 w/ Unified Airlines 363
+First
+$281 each
+returnFlightPrice = Paris to New York
+12/29/2018 @ 14:30 w/ Blue Skies Airlines 631
+First
+$273 each
+noOfPassengers = 2 passengers
+tax = $91 USD
+totalPrice = $1199 USD
+departBeginIndex=68
+departEndIndex=71
+departFlightPrice=281
+FAIL ~ Test Step FAILED for Flight Confirmation :: The return flight price is not displayed!
+Property is set for Caption7=The return flight price is not displayed!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0007.jpg
+returnBeginIndex=71
+returnEndIndex=74
+returnFlightPrice=273
+taxIndex=3
+departFlightPriceInt = 281
+returnFlightPriceInt = 273
+noOfPassengersInt = 2
+taxInt = 91
+totalPriceInt = 1199
+PASS ~ Test Step Passed for Flight Confirmation Price :: Total Price = 1199
+Property is set for Caption8=Total Price = 1199
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0008.jpg
+[12/29/18 14:09:21.897] | + OK : clickLink - //img[contains(@src,'Logout')]
+PASS ~ Test Step Passed for Verdict :: Test case is successful!
+Property is set for Caption9=Test case is successful!
+Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0009.jpg
+Test Ended @ 12292018 140922
+~ The difference between 12292018 140808 & 12292018 140922 = 1 Min. 14Sec.
+Test Duration = 1 Min. 14Sec.
+_______________________________ TEST END_________________________
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Homework: 
+
+Add assertions/validations for :
+Departing flight : New York to Paris
+Arriving flight: Paris to New York
+Date
+Airlines
+FirstClass
+Billed Price
+Delivery Address
+
+
+================
+Java - Usage of escape character (/):
+\" = '    - //*[@id='HN_Accounts_DD\"]
+\\ = /    - D:\\SeleniumDriver\\logs/screenshots
+
+
+==============================
+
+UNIX Commands:
+
+conn login
+passwd = change password
+ls   = list out all directories
+whoami = your user id
+cd D:\webservice    = change directory
+
+Basic UNIX commands
+Note: not all of these are actually part of UNIX itself, and you may not find them on all UNIX machines. But they can all be used on turing in essentially the same way, by typing the command and hitting return. Note that some of these commands are different on non-Solaris machines - see SunOS differences. 
+If you've made a typo, the easiest thing to do is hit CTRL-u to cancel the whole line. But you can also edit the command line (see the guide to More UNIX). 
+UNIX is case-sensitive.
+Files
+ls --- lists your files 
+ls -l --- lists your files in 'long format', which contains lots of useful information, e.g. the exact size of the file, who owns the file and who has the right to look at it, and when it was last modified. 
+ls -a --- lists all files, including the ones whose filenames begin in a dot, which you do not always want to see. 
+There are many more options, for example to list files by size, by date, recursively etc.
+more filename --- shows the first part of a file, just as much as will fit on one screen. Just hit the space bar to see more or q to quit. You can use /pattern to search for a pattern.
+emacs filename --- is an editor that lets you create and edit a file. See the emacs page.
+mv filename1 filename2 --- moves a file (i.e. gives it a different name, or moves it into a different directory (see below)
+cp filename1 filename2 --- copies a file
+rm filename --- removes a file. It is wise to use the option rm -i, which will ask you for confirmation before actually deleting anything. You can make this your default by making an alias in your .cshrc file.
+diff filename1 filename2 --- compares files, and shows where they differ
+wc filename --- tells you how many lines, words, and characters there are in a file
+chmod options filename --- lets you change the read, write, and execute permissions on your files. The default is that only you can look at them and change them, but you may sometimes want to change these permissions. For example, chmod o+r filename will make the file readable for everyone, and chmod o-r filename will make it unreadable for others again. Note that for someone to be able to actually look at the file the directories it is in need to be at least executable. See help protection for more details.
+File Compression
+gzip filename --- compresses files, so that they take up much less space. Usually text files compress to about half their original size, but it depends very much on the size of the file and the nature of the contents. There are other tools for this purpose, too (e.g. compress), but gzip usually gives the highest compression rate. Gzip produces files with the ending '.gz' appended to the original filename.
+gunzip filename --- uncompresses files compressed by gzip.
+gzcat filename --- lets you look at a gzipped file without actually having to gunzip it (same as gunzip -c). You can even print it directly, using gzcat filename | lpr
+printing
+lpr filename --- print. Use the -P option to specify the printer name if you want to use a printer other than your default printer. For example, if you want to print double-sided, use 'lpr -Pvalkyr-d', or if you're at CSLI, you may want to use 'lpr -Pcord115-d'. See 'help printers' for more information about printers and their locations.
+lpq --- check out the printer queue, e.g. to get the number needed for removal, or to see how many other files will be printed before yours will come out
+lprm jobnumber --- remove something from the printer queue. You can find the job number by using lpq. Theoretically you also have to specify a printer name, but this isn't necessary as long as you use your default printer in the department.
+genscript --- converts plain text files into postscript for printing, and gives you some options for formatting. Consider making an alias like alias ecop 'genscript -2 -r \!* | lpr -h -Pvalkyr' to print two pages on one piece of paper.
+dvips filename --- print .dvi files (i.e. files produced by LaTeX). You can use dviselect to print only selected pages. See the LaTeX page for more information about how to save paper when printing drafts.
+Directories
+Directories, like folders on a Macintosh, are used to group files together in a hierarchical structure.
+mkdir dirname --- make a new directory
+cd dirname --- change directory. You basically 'go' to another directory, and you will see the files in that directory when you do 'ls'. You always start out in your 'home directory', and you can get back there by typing 'cd' without arguments. 'cd ..' will get you one level up from your current position. You don't have to walk along step by step - you can make big leaps or avoid walking around by specifying pathnames.
+pwd --- tells you where you currently are.
+Finding things
+ff --- find files anywhere on the system. This can be extremely useful if you've forgotten in which directory you put a file, but do remember the name. In fact, if you use ff -p you don't even need the full name, just the beginning. This can also be useful for finding other things on the system, e.g. documentation.
+grep string filename(s) --- looks for the string in the files. This can be useful a lot of purposes, e.g. finding the right file among many, figuring out which is the right version of something, and even doing serious corpus work. grep comes in several varieties (grep, egrep, and fgrep) and has a lot of very flexible options. Check out the man pages if this sounds good to you.
+About other people
+w --- tells you who's logged in, and what they're doing. Especially useful: the 'idle' part. This allows you to see whether they're actually sitting there typing away at their keyboards right at the moment.
+who --- tells you who's logged on, and where they're coming from. Useful if you're looking for someone who's actually physically in the same building as you, or in some other particular location.
+finger username --- gives you lots of information about that user, e.g. when they last read their mail and whether they're logged in. Often people put other practical information, such as phone numbers and addresses, in a file called .plan. This information is also displayed by 'finger'.
+last -1 username --- tells you when the user last logged on and off and from where. Without any options, last will give you a list of everyone's logins.
+talk username --- lets you have a (typed) conversation with another user
+write username --- lets you exchange one-line messages with another user
+elm --- lets you send e-mail messages to people around the world (and, of course, read them). It's not the only mailer you can use, but the one we recommend. See the elm page, and find out about the departmental mailing lists (which you can also find in /user/linguistics/helpfile).
+About your (electronic) self
+whoami --- returns your username. Sounds useless, but isn't. You may need to find out who it is who forgot to log out somewhere, and make sure *you* have logged out.
+finger & .plan files 
+of course you can finger yourself, too. That can be useful e.g. as a quick check whether you got new mail. Try to create a useful .plan file soon. Look at other people's .plan files for ideas. The file needs to be readable for everyone in order to be visible through 'finger'. Do 'chmod a+r .plan' if necessary. You should realize that this information is accessible from anywhere in the world, not just to other people on turing.
+passwd --- lets you change your password, which you should do regularly (at least once a year). See the LRB guide and/or look at help password.
+ps -u yourusername --- lists your processes. Contains lots of information about them, including the process ID, which you need if you have to kill a process. Normally, when you have been kicked out of a dialin session or have otherwise managed to get yourself disconnected abruptly, this list will contain the processes you need to kill. Those may include the shell (tcsh or whatever you're using), and anything you were running, for example emacs or elm. Be careful not to kill your current shell - the one with the number closer to the one of the ps command you're currently running. But if it happens, don't panic. Just try again :) If you're using an X-display you may have to kill some X processes before you can start them again. These will show only when you use ps -efl, because they're root processes.
+kill PID --- kills (ends) the processes with the ID you gave. This works only for your own processes, of course. Get the ID by using ps. If the process doesn't 'die' properly, use the option -9. But attempt without that option first, because it doesn't give the process a chance to finish possibly important business before dying. You may need to kill processes for example if your modem connection was interrupted and you didn't get logged out properly, which sometimes happens.
+quota -v --- show what your disk quota is (i.e. how much space you have to store files), how much you're actually using, and in case you've exceeded your quota (which you'll be given an automatic warning about by the system) how much time you have left to sort them out (by deleting or gzipping some, or moving them to your own computer).
+du filename --- shows the disk usage of the files and directories in filename (without argument the current directory is used). du -s gives only a total.
+last yourusername --- lists your last logins. Can be a useful memory aid for when you were where, how long you've been working for, and keeping track of your phonebill if you're making a non-local phonecall for dialling in.
+Connecting to the outside world
+nn --- allows you to read news. It will first let you read the news local to turing, and then the remote news. If you want to read only the local or remote news, you can use nnl or nnr, respectively. To learn more about nn type nn, then \tty{:man}, then \tty{=.*}, then \tty{Z}, then hit the space bar to step through the manual. Or look at the man page. Or check out the hypertext nn FAQ - probably the easiest and most fun way to go.
+rlogin hostname --- lets you connect to a remote host
+telnet hostname --- also lets you connect to a remote host. Use rlogin whenever possible.
+ftp hostname --- lets you download files from a remote host which is set up as an ftp-server. This is a common method for exchanging academic papers and drafts. If you need to make a paper of yours available in this way, you can (temporarily) put a copy in /user/ftp/pub/TMP. For more permanent solutions, ask Emma. The most important commands within ftp are get for getting files from the remote machine, and put for putting them there (mget and mput let you specify more than one file at once). Sounds straightforward, but be sure not to confuse the two, especially when your physical location doesn't correspond to the direction of the ftp connection you're making. ftp just overwrites files with the same filename. If you're transferring anything other than ASCII text, use binary mode.
+lynx --- lets you browse the web from an ordinary terminal. Of course you can see only the text, not the pictures. You can type any URL as an argument to the G command. When you're doing this from any Stanford host you can leave out the .stanford.edu part of the URL when connecting to Stanford URLs. Type H at any time to learn more about lynx, and Q to exit.
+Miscellaneous tools
+webster word --- looks up the word in an electronic version of Webster's dictionary and returns the definition(s)
+date --- shows the current date and time.
+cal --- shows a calendar of the current month. Use e.g., 'cal 10 1995' to get that for October 95, or 'cal 1995' to get the whole year.
+You can find out more about these commands by looking up their manpages: 
+man commandname --- shows you the manual page for the command
+==============
+
+TestNG (Advantageous):
+
+TestNG - framework - mainly used for
+Eclipse -> Help -> Install new software
+TestNG Eclipse - http://beust.com/eclipse
+
+Annotations: @BeforeTest, @AfterTest, @Test, @DataProvider 
+
+===============================================
+Regular Expressions: 
+
+Validating the pattern to identify and manipulate string operations
+
+Example: ^$[0-9]*$
+
+[0-9]   or \d = Digit 
+[a-z] = alphabet
+[a-z]* = 1 or many alphabets
+abc&9e3  -----    [^a-zA-Z&0-9$] +
+
+ = [a-zA-Z0-9@#]  \d
+
+  Single Alphabet  = [a-zA-Z]
+Single Alphabet in lower case = [a-z]  = p, a ,c, q, z
+Single Alphabet in upper case = [A-Z]  = Q
+Single digit  Number = [0-9]   = \d    = 7, 0 , 11 (not a match)
+Single  Alphanumeric Character = = [a-zA-Z0-9]  = 1, a, C
+ Any number of digits (1 or many occurences) = [0-9]+   = 1, 23, 2323232
+ Any number of digits (0 to many occurances) = [0-9]*   = , 2, 2323232
+  
+  Starting position = ^
+  Ending Position = $
+  n-Digit number = [0-9]{n}   = [0-9]{6} = 123456 (match), 2323 (not match)
+  Special Charcter: [^a-zA-Z0-9] [/]   = [@]
+  
+Examples:
+
+Alphabets: Automation = [a-zA-Z]+
+Alphanumeric Characters: Automation123 = [a-zA-Z0-9]+
+Alphanumeric Special characters: Automation_123_Selenium@% = [a-zA-Z0-9_%@#]*
+
+01 02   09 10 11 12
+
+01/02/2019   =  [0-9]{2}[\/][0-9]{2}[\/][0-9]{4}
+  Date: mm/dd/yyyy   12/01/2016 (dob)
+  
+  [0-1][0-9][/][0-3][1-2][/][[19]|[20]][0-9]{2}
+12/02/2010 = [0-1][0-9][\/][0-3][0-9][\/][2][0][0-9]*
+
+Email: someone@somewhere.com/net/org/edu...
+^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$
+
+Valid string : das.shukla@yahoo.com
+Invalid string: das.shukla#yahoo.com
+
+Practice:
+https://regex101.com/
+https://www.regextester.com/
+https://regexr.com/
+
+// Find Using Regular Expression Example:
+
+	private String makeAbsolute(String url, String link) {
+		if (link.matches("http://.*")) {
+			return link;
+		}
+		if (link.matches("/.*") && url.matches(".*$[^/]")) {
+			return url + "/" + link;
+		}
+		if (link.matches("[^/].*") && url.matches(".*[^/]")) {
+			return url + "/" + link;
+		}
+		if (link.matches("/.*") && url.matches(".*[/]")) {
+			return url + link;
+		}
+		if (link.matches("/.*") && url.matches(".*[^/]")) {
+			return url + link;
+		}
+		throw new RuntimeException("Cannot make the link absolute. Url: " + url
+				+ " Link " + link);
+	}
+
+
+returnFlightPriceBoolean = returnFlightPrice.matches("[$][0-9]+");
+
+-----------------------
+
+Debugging : To fix the automation errors
+Breakpoint : To execute until that point and halt
+Step into [F5]: Go inside the method and debug line by line
+Step over [F6]: Just debug the line and go on
+Step return [F7]: Go back and debug and continue forward
+	
+------------------------
+
+Utilities:
+
+String Utility: subString(beginIndex, endIndex)
+totalPrice = totalPrice.substring(1, totalPriceLastIndex); // $11243 USD = 11243
+
+
+
+WebServices:
+	
+WSDL/EndPoint: 	http://www.webservicex.com/globalweather.asmx?wsdl
+
+1. Read EndPoint
+2. Read Request XML/JSON
+3. Post Request XML/JSON
+4. Fetch & Save Response XML/JSON
+5. Put all XML (Request + Response) into HashMap (to access/validate response in code)
+
+
+SOAP Services: XMLs , SOAPUI tool
+Restful Services: JSON, Ready API! (RestAssured.jar)
+
+XML Format:
+
+<Home>
+ <Rooms>
+  <Room1>
+   <color>blue</color>
+   ---
+  </Room1>
+  <Room2>
+   ---
+   ---
+  </Room2>
+ </Rooms>
+</Home>
+
+Examples:
+
+XML Request:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<authentication-context>
+  <username>my_username</username>
+  <password>my_password</password>
+  <validation-factors>
+    <validation-factor>
+      <name>remote_address</name>
+      <value>127.0.0.1</value>
+    </validation-factor>
+  </validation-factors>
+</authentication-context>
+
+
+
+JSON Request:
+
+{
+   "username" : "my_username",
+   "password" : "my_password",
+   "validation-factors" : {
+      "validationFactors" : [
+         {
+            "name" : "remote_address",
+            "value" : "127.0.0.1"
+         }
+      ]
+   }
+}
+
+DATABASE Automation:
+
+1. Estabilish Connection to database (hostname - localhost, database name, port number-9090, user name, password)
+2. Construct SQL query (SELECT, UPDATE, DELETE, CREATE)
+3. Run SQL Query
+4. Fetch Results
+5. Validate database results
+
+SQL> connect / as sysdba;
+SQL> alter user system identified by <new_password>;
+
+SQL Query: Select * from schema.TableName where condition
+
+Shukla = String sql1=Select firstName from PersonalDertails where age = 31;
+
+select username,password from dba_users;
+
+system / automation123
+alter user user_name identified by "new_password" replace "old_password" ;
+
+
+MQ-Message Queueing:
+-------------------
+
+Definition: A message queue is a queue of messages sent between applications. It includes a sequence of work objects that are waiting to be processed. A message is the data transported between the sender and the receiver application; it's essentially a byte array with some headers on top.
+
+Message queuing allows applications to communicate by sending messages to each other. The message queue provides a temporary message storage (cache/buffer) when the destination program is busy or not connected.
+
+A queue is a line of things waiting to be handled - in sequential order starting at the beginning of the line. A message queue is a queue of messages sent between applications. It includes a sequence of work objects that are waiting to be processed.
+
+A message is the data transported between the sender and the receiver application; it's essentially a byte array with some headers on top. An example of a message could be something that tells one system to start processing a task, it could contains information about a finished task or just be a plain message.
+
+Message queue
+The basic architecture of a message queue is simple, there are client applications called producers that create messages and deliver them to the message queue. An other application, called consumer, connect to the queue and get the messages to be processed. Messages placed onto the queue are stored until the consumer retrieves them.
+
+Synchronous vs. Asynchronous
+Synchronous data transfer: sender and receiver use the same clock signal
+-supports high data transfer rate
+-needs clock signal between the sender and the receiver
+-requires master/slave configuration
+
+Asynchronous data transfer: sender provides a synchronization signal to the receiver before starting the transfer of each message
+-does not need clock signal between the sender and the receiver
+-slower data transfer rate
+
+Tools to install: RFH Util, MQ Explorer (Monitoring/To check messages)
+MQ Basics:
+Message Oriented Middleware (MOM)
+
+Platform A       Platform B
+put in msg       get out msg
+
+MQ Conn: PUT, GET
+MQ Types: Synchronous, Asynchronous
+MQ Series Objects: Message Queue, MQ Manager (QM1 ->Queue Channels Listeners -> QM2)
+Triggers: (Automatic or manual) s1-> s2 -> s3
+Properties of RQ(Remote Queue)/RQD
+Transmit Queue - TQ1
+Destination Queue - LQ2
+Destination Q Manager - QM2
+
+Channels: (channels are uni-directional) Sender QM <-> Receiver QM <->QM3
+Listener Type: TCP/IP
+-Listener needs to be running
+-If listener is running, queue menager is running
+
+MQ Explorer:
+QM -> Queues, Channels, Listeners
+
+Size of message file: 50 MB (max limit)
+
+Dead-Letter queue:
+XML1 |  XML2
+Q1   | Q2
+<Msg Id>  |	<msg id>
+12345      |  xyz12
+<CorrelationId> | <correlation id>
+00000            |   12345
+
+
+Basic Commands:
+CUR DEPTH - Current depth of queue
+PUT
+GET
+CLVSNL - property of the queue
+DSPMQ  - displays all queue messages & properties
+RUNMQSC <QMgrName> - get into Q mgr, listener,
+DISPLAY QLOCAL <QName> 
+DISPLAY QREMOTE <QName>
+LSEXCP -Q <qname>
+LSEXCP -h1 (last one hour)
+LSEXCP -h24 (last 24 hrs)
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Maven:
+
+Apache Maven is a Java tool, so you must install Java.
+
+Download apache-maven-3.x.x-bin.zip
+Unzip the archive to C:\drivers
+Add M2_HOME environment variable by opening the system properties (WinKey+Pause), selecting Advanced tab, and 'Environment Variables' 
+System Variable: M2_HOME = C:\drivers\apache-maven-3.6.0
+User Variable: Add M2 environment variable in user variables with value "%M2_HOME%\bin"
+User Variable: Optional: MAVEN_OPTS environment variables to specify JVM properties "-Xms256m -Xmx512m"
+User Variable: UPdate/Create Path environment variable w/ value:  "%M2%;%Path%" to add maven available in the command line
+
+JAVA_HOME = C:\Program Files\Java\jdk1.8.0_xx
+"%JAVA_HOME%\bin" 
+
+CMD: mvn --version
+CMD: java --version
+
+The below folder should be created automatically:
+C:\Users\<user-name>\.m2
+All Jars will be downloaded in : C:\Users\<user-name>\.m2\repository\
+
+To add dependencies search in (apache.poi)  :
+
+https://mvnrepository.com/artifact/org.apache.poi
+
+Add below code block in pom.xml:
+
+<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+<dependency>
+    <groupId>org.apache.poi</groupId>
+    <artifactId>poi</artifactId>
+    <version>4.0.1</version>
+    <scope>test</scope>
+</dependency>
+
+
+Example pom: https://github.com/appium-boneyard/sample-code/blob/master/sample-code/examples/java/junit/pom.xml
+
+Convesion - Maven <-> Non-Maven:
+
+1. Convert existing non-maven project to Maven:
+   Rt.Click on project -> Configure -> Conver to Maven Project
+2. Convert existing maven project to non-maven project:
+   Rt.Click on project -> Maven -> Disable Maven Nature
+
+ 
+
+Maven commands:
+
+mvn clean install
+mvn clean package
+
+Maven Phases
+Although hardly a comprehensive list, these are the most common default lifecycle phases executed.
+
+validate: validate the project is correct and all necessary information is available
+compile: compile the source code of the project
+test: test the compiled source code using a suitable unit testing framework. These tests should not require the code be packaged or deployed
+package: take the compiled code and package it in its distributable format, such as a JAR.
+integration-test: process and deploy the package if necessary into an environment where integration tests can be run
+verify: run any checks to verify the package is valid and meets quality criteria
+install: install the package into the local repository, for use as a dependency in other projects locally
+deploy: done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects.
+There are two other Maven lifecycles of note beyond the default list above. They are
+
+clean: cleans up artifacts created by prior builds
+site: generates site documentation for this project
+Phases are actually mapped to underlying goals. The specific goals executed per phase is dependant upon the packaging type of the project. For example, package executes jar:jar if the project type is a JAR, and war:war if the project type is - you guessed it - a WAR.
+
+An interesting thing to note is that phases and goals may be executed in sequence.
+
+__________________________________________
+Tid-bits:
+
+create the variables directly in the class not inside methods as they will not be accessible in Pages/Flows....
+public class SelfRegistration {
+	// Fields
+	public static final String link_Apply = "//*[contains(@title, 'Apply For Assistance')]";
+	public static final String iframe_MainContent = "//iframe[contains(@title,'Main Content')]";
+	public static final String iframe_Home = "//iframe[contains(@title, 'Home')]";
+)
+	
+
+import pages.citizen.CreateAccount;
+sd.selectRadioButton(driver, GettingStarted1.radio_CreateAccount);
+
+public void createAccount(WebDriver driver) throws Exception{
+HashMap<String, String> h = TestDataPool.rowData;
+ 
+HashMap<String,String> h = new HashMap<>();		
+ 		h = TestDataPool.rowData;
+
+// Calculating Start Timestamps
+		startTestCase = DateUtils.getCurrentTimestamp("MMddyyyy HHmmss");
+		System.out.println("Test Started @ "+ startTestCase);
+
+finally{
+			System.out.println("~Entered Finally Block...");
+			String testDuration = DateUtils.getDateTimeDifference(startTestCase, endTestCase, "MMddyyyy HHmmss");
+			System.out.println("Test Duration = "+testDuration);
+			System.out.println("_______________________________ TEST END_________________________");
+
+
+
+
+
+Notes:  
+
+Use Constants.java for folder paths and file names
+Always give correct path otherwise, it will throw file not found exception
+Always end the folder path with "\\"
+For Captions, mention the file name as part of folder path
+Call reportUtils method in each path after all operations but before clicking submit button
+Call reportUtils wherever you are validating
+
+Console logs:   PASS ~ Test Step Passed for Verdict :: Test case is successful!
+Property file: Property is set for Caption9=Test case is successful!
+Screenshot : Screenshot is captured @ C:\Selenium_Logs\Screenshots\/screenShot0009.jpg
+
+
+	if(verdict_Pass_Fail.equalsIgnoreCase("Pass")){
+			System.out.println("PASS ~ Test Step Passed for "+header+ " :: "+ reportComment);
+			PropertyUtils.propertyFile_Write("D:/Selenium_Logs/Screenshots/Captions.properties", "Caption"+counter, reportComment);
+ 			ScreenshotUtils.screenshot(Constants.screenshotFolderPath, counter);
+		}
+		else if (verdict_Pass_Fail.equalsIgnoreCase("Fail")){
+			System.out.println("FAIL ~ Test Step FAILED for "+header+ " :: "+ reportComment);
+			PropertyUtils.propertyFile_Write("D:/Selenium_Logs/Screenshots/Captions.properties", "Caption"+counter, reportComment);
+  			ScreenshotUtils.screenshot(Constants.screenshotFolderPath, counter);
+		}
+		
+		else if (verdict_Pass_Fail.equalsIgnoreCase("Done")){
+			System.out.println("Done ~ Test Step is Done for "+header+ " :: "+ reportComment);
+			PropertyUtils.propertyFile_Write("D:/Selenium_Logs/Screenshots/Captions.properties", "Caption"+counter, reportComment);
+		}
+		else{
+			System.out.println("Please mention either Pass, Fail or Done");
+	}
+	
+
+-------------------------------------------------------------------------------------------------------
+
+
+public class DateUtils {
+
+
+	public static String getCurrentDate(String desiredDateFormat){
+		String dateString = null;
+		try {
+			LocalDate date = LocalDate.now();
+			DateTimeFormatter format = DateTimeFormat.forPattern(desiredDateFormat);
+			dateString = format.print(date);
+			System.out.println("Current Date = "+ dateString);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return dateString;
+
+
+	}
+
+	
+	 // desiredDateTimeFormat - Returns current timestamp
+ 	
+	public static String getCurrentTimestamp(String desiredDateTimeFormat){
+		String timeStamp = null;
+		try {
+			timeStamp = new SimpleDateFormat(desiredDateTimeFormat,Locale.US).format(new Date());
+			//System.out.println("Current Timestamp = "+ timeStamp);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return timeStamp;
+	}
+	
+	/**
+	 * param getDateTimeDifference - Takes 3 arguments (StartTime, EndTime, DateTimeFormat) Returns the difference between two timestamps in format: 8 Min. 15 Sec.
+	 * @param startDateTime
+	 * @param endDateTime
+	 * @param format_DateTime
+	 * @return
+	 * @throws ParseException
+	 */
+	
+	public static String getDateTimeDifference(String startDateTime, String endDateTime, String format_DateTime) throws ParseException{
+
+		SimpleDateFormat format = new SimpleDateFormat(format_DateTime);
+
+		Date d1 = null;
+		Date d2 = null;
+
+		int min = 0;
+		int sec = 0;
+
+
+		d1 =format.parse(startDateTime);
+		d2 =format.parse(endDateTime);
+
+
+		DateTime  dt1 = new DateTime(d1);
+		DateTime  dt2 = new DateTime(d2);
+
+		min= Minutes.minutesBetween(dt1, dt2).getMinutes()%60;
+		sec =Seconds.secondsBetween(dt1, dt2).getSeconds()%60;
+		//	int hours = Hours.hoursBetween(dt1, dt2).getHours()%24;
+		System.out.println("~ The difference between "+startDateTime +" & "+ endDateTime +" = "+ min+" Min."+" "+sec+ "Sec." );
+		return min+" Min."+" "+sec+ "Sec.";
+
+	}	
+
+	public static String datetime_PlusHours(int n, String pattern_MMdyyyHHmmss){
+
+		LocalDateTime today = LocalDateTime.now(DateTimeZone.forID("America/Montreal"));
+		LocalDateTime resultDateTime = today.plusHours(n);
+
+		DateTimeFormatter fmt = DateTimeFormat.forPattern(pattern_MMdyyyHHmmss);
+		String str = fmt.print(resultDateTime);
+
+		System.out.println("datetime_PlusHours :"+str);
+
+		return str;
+
+	}
+
+	public static String datetime_MinusDays(int n, String pattern_MMdyyyHHmmss){
+
+		LocalDateTime today = LocalDateTime.now(DateTimeZone.forID("America/Montreal"));
+		LocalDateTime resultDateTime = today.minusDays(n);
+
+		DateTimeFormatter fmt = DateTimeFormat.forPattern(pattern_MMdyyyHHmmss);
+		String str = fmt.print(resultDateTime);
+
+		System.out.println("datetime_MinusDays :"+str);
+
+		return str;
+
+	}
+	
+	
+	
+	public static String datetime_PlusYears(int n, String pattern_MMdyyyHHmmss){
+
+		LocalDateTime today = LocalDateTime.now(DateTimeZone.forID("America/Montreal"));
+		LocalDateTime resultDateTime = today.plusYears(n);
+
+		DateTimeFormatter fmt = DateTimeFormat.forPattern(pattern_MMdyyyHHmmss);
+		String str = fmt.print(resultDateTime);
+
+		System.out.println("datetime_PlusYears :"+str);
+
+		return str;
+
+	}
+	
+	/**
+	 * datetime_PlusOrMinus_YearsMonthsWeeksDaysHoursMinutsSeconds - Add or Subtract YearsMonthsWeeksDaysHoursMinutsSecond
+	 *  Pass Positive integer for adding the values
+	 *  Pass Negative integer for subtracting the values
+	 * @param years
+	 * @param months
+	 * @param weeks
+	 * @param days
+	 * @param hours
+	 * @param minutes
+	 * @param seconds
+	 * @param DateTimeFormat
+	 */
+	public static String datetime_PlusOrMinus_YearsMonthsWeeksDaysHoursMinutsSeconds(int years, int months, int weeks, int days , int hours, int minutes, int seconds, String DateTimePattern )
+	{
+		String str = "";
+		try {
+			LocalDateTime today = LocalDateTime.now(DateTimeZone.forID("America/Montreal"));
+			
+			LocalDateTime resultDateTime = today.plusYears(years).plusMonths(months).plusWeeks(weeks).plusDays(days).plusHours(hours).plusMinutes(minutes).plusSeconds(seconds);
+			
+			DateTimeFormatter fmt = DateTimeFormat.forPattern(DateTimePattern);
+			str = fmt.print(resultDateTime);
+
+			System.out.println("datetime_PlusOrMinus_YearsMonthsWeeksDaysHoursMinutsSeconds :\n"
+			+ years + "years"+"+"
+			+ months + "months"+"+"
+			+ weeks + "weeks"+"+"
+			+ days + "days"+"+"
+			+ hours + "hours"+"+"
+			+ minutes + "minutes"+"+"
+			+ seconds + "seconds"
+					+" = "+str);
+
+		 	
+		} catch (Exception e) {
+ 			e.printStackTrace();
+		}
+		
+		finally{
+ 		System.out.println("Entered finally block!");
+		}
+		return str;
+	}
+
+	public static void main(String args[]){
+
+		try {
+//			datetime_PlusHours(2, "MM/d/yyyy HH.mm.ss");
+//			datetime_MinusDays(5, "MM/d/yyy HH.mm.ss");
+//			datetime_PlusYears(-2, "MM-d-YYYY HH:mm:ss");
+//			datetime_PlusOrMinus_YearsMonthsWeeksDaysHoursMinutsSeconds(1, 2, 3, 4, 2, 15, 10, "MM-dd-yyyy HH:mm:ss");
+//			datetime_PlusOrMinus_YearsMonthsWeeksDaysHoursMinutsSeconds(-5, 2, 3, 4, 2, 15, 10, "MM-dd-yyyy HH:mm:ss");
+//			getCurrentDate("MM/dd/yyyy");
+ 			getCurrentTimestamp("MM/dd/yyyy HH:mm:ss");
+		//	getDateTimeDifference(datetime_PlusHours(0, "MM/d/yyyy HH.mm.ss"), datetime_PlusHours(2, "MM/d/yyyy HH.mm.ss"), "MM/dd/yyyy HH:mm:ss");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+}
+----------------------------------------------------------------------
+Data-driven approach :: 
+
+Parameterizing the hard-coded values in the test case
+Parameterization: Replacing the hard-coded values with the parameters whose data comes from any external system such as Excel spreadsheet, flat file, CSV file, Database..
+
+Excel Utils:
+
+public class ExcelUtils {
+
+	public static HashMap<String,String> getTestDataXls(String filePath, String sheetName, int headerRowNum, int tcRowNum) throws Exception
+	{
+	
+ 
+		HashMap<String,String> rowData = new HashMap<>();
+		
+		HSSFSheet sheet = null;
+		HSSFWorkbook workbook = null;
+		HSSFRow  headerRow,tcRow;
+		
+		FileInputStream file = null;
+		
+ 		try {
+			file = new FileInputStream(new File(filePath));//D:\Selenium_Logs\TestData\Datapool.xls 
+		workbook = new HSSFWorkbook(file);
+	 	
+		} catch (Exception e) {
+ 			e.printStackTrace();
+		} 
+		
+		
+		sheet = workbook.getSheet(sheetName);
+		headerRow = sheet.getRow(headerRowNum);
+		tcRow = sheet.getRow(tcRowNum);
+		
+		Iterator<org.apache.poi.ss.usermodel.Cell> cellIterator = headerRow.cellIterator();
+		
+		int i = 0;
+		while(cellIterator.hasNext()){
+			
+			org.apache.poi.ss.usermodel.Cell cell = cellIterator.next();
+			
+			rowData.put(cellValueStr(workbook,headerRow,i), cellValueStr(workbook,tcRow,i));
+			
+		i++;
+			
+		}
+				
+		workbook.close();
+		file.close();
+ 	
+		return rowData;
+ 	
+	
+}
+	
+	
+/*	public static HashMap<String,String> getTestDataXlsx(String filePath, String sheetName, int headerRowNum, String tcName) throws Exception
+	{
+ 	 	
+		HashMap<String,String> rowData = new HashMap<>();
+		
+		XSSFSheet sheet = null;
+		XSSFWorkbook workbook = null;
+		XSSFRow  headerRow,tcRow;
+		
+		FileInputStream file = null;
+		
+ 		try {
+			file = new FileInputStream(new File(filePath));//D:\Selenium_Logs\TestData\Datapool.xls 
+		workbook = new XSSFWorkbook(file);
+	 	
+		} catch (Exception e) {
+ 			e.printStackTrace();
+		} 
+		
+		
+		sheet = workbook.getSheet(sheetName);
+		headerRow = sheet.getRow(headerRowNum);
+		tcRow = sheet.getRow(findRow(sheet,tcName));
+		
+		Iterator<org.apache.poi.ss.usermodel.Cell> cellIterator = headerRow.cellIterator();
+		
+		int i = 0;
+		while(cellIterator.hasNext()){
+			
+			org.apache.poi.ss.usermodel.Cell cell = cellIterator.next();
+			
+			rowData.put(cellValueStrX(workbook,headerRow,i), cellValueStrX(workbook,tcRow,i));
+			
+		i++;
+			
+		}
+				
+		workbook.close();
+		file.close();
+		
+		
+		return rowData;
+		
+		
+	
+}*/
+	
+	public static String cellValueStr (HSSFWorkbook workbook, HSSFRow row, int cellNum){
+		DataFormatter format = new DataFormatter();
+		FormulaEvaluator eval = new HSSFFormulaEvaluator(workbook);
+		
+		HSSFCell cellValue = row.getCell(cellNum);
+		
+		eval.evaluate(cellValue);
+		
+		String cellValueStr = format.formatCellValue(cellValue,eval);
+		
+		
+		return cellValueStr;
+	 	
+		
+	}
+	
+	public static String cellValueStrX (XSSFWorkbook workbook, XSSFRow row, int cellNum){
+		DataFormatter format = new DataFormatter();
+		FormulaEvaluator eval = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
+		
+		XSSFCell cellValue = row.getCell(cellNum);
+		
+		eval.evaluate(cellValue);
+		
+		String cellValueStr = format.formatCellValue(cellValue,eval);
+		
+		
+		return cellValueStr;
+	 	
+		
+	}
+	
+	
+/*	@SuppressWarnings("deprecation")
+	public static int findRow(XSSFSheet sheet, String cellContent){
+		for(org.apache.poi.ss.usermodel.Row row: sheet){
+			for(org.apache.poi.ss.usermodel.Cell cell: row){
+				if(cell.getCellType() == org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING){
+					if(cell.getRichStringCellValue().getString().trim().equals(cellContent)){
+						return row.getRowNum();
+
+					}
+				}
+			}
+ 
+			
+		}
+		return 0;
+	}*/
+	
+}
+
+
+----------------------------------------------------------
+Advanced Operations:
+
+Frames:
+Iframes: If xpath is not located, then go back to DOM
+Type in chrome DOM after ctrl F: //iframe
+If no such element found exception is thrown:
+come to DOM and enter //iframe or //frame then hover over each iframe and see which iframe covers the object
+Then find the xpath of iframe and switch to it
+Then operate on the inside element	
+
+ WebElement we = driver.findElement(By.xpath("//frame[@name='topFrame']"));
+ driver.switchTo().frame(we);
+ //new Operations().switchToFrame(driver, "//frame[@name='topFrame']");
+
+After doing operations on the objects inside frame, switch back
+
+driver.switchTo().defaultContent();
+//new Operations().switchToDefault()	
+
+
+Actions:
+	Actions builder = new Actions(driver);
+	Action seriesOfActions = builder
+			.moveToElement(userName)
+			.click()
+			.keyDown(userName, Keys.SHIFT)
+			.sendKeys(userName, "hello")
+			.doubleClick(userName)
+			.contextClick(userName)
+			.build();
+	seriesOfActions.perform();
+
+
+Menus with Actions:
+ Actions act = new Actions(driver);
+ act.moveToElement(we).build().perform(); 
+moveToElement - move to element
+contextClick - right click
+
+ 
+
+Alert/Popup::
+
+ String alertMessage = driver.switchTo().alert().getText();
+ driver.switchTo().alert().accept();// Click OK
+ 
+ 
+Download:
+
+
+		driver.get(baseUrl);
+		WebElement downloadButton = driver.findElement(By.id("messenger-download"));
+		String sourceLocation = downloadButton.getAttribute("href");
+		String wget_command = "cmd /c wget -P c: --no-check-certificate " + sourceLocation;
+		try {
+			Process exec = Runtime.getRuntime().exec(wget_command);
+			int exitVal = exec.waitFor();
+			System.out.println("Exit value: " + exitVal);
+		} catch (Exception ex) {
+			System.out.println(ex.toString());
+		}
+		driver.quit();
+	
+Explicit Wait:
+ WebDriverWait myWait = new WebDriverWait(driver, maxTimeOutInSecond);
+ myWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpathOfWaitingElement)));
+		
+
+Expected Conditions:
+
+if(op.webElement(driver, Registration.textBox_FirstName).isEnabled())
+op.setText(driver, Registration.textBox_FirstName, rowData.get("firstName1"));
+
+if(op.webElement(driver, Registration.textBox_Address1).isDisplayed())
+op.setText(driver, Registration.textBox_Address1, rowData.get("address1"));		
+
+if(op.webElement(driver, Registration.dropdown_Country).isSelected())
+op.selectDropdown(driver, Registration.dropdown_Country, "UNITED STATES");
+
+WebDriverWait myWait = new WebDriverWait(driver, 10);
+ if(myWait.until(ExpectedConditions.alertIsPresent()) != null )
+ System.out.println("Alert is present.");
+
+
+ WebElement txt= myWait.until(ExpectedConditions.elementToBeClickable(By.id("username")));
+ myWait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("viewFrame"));
+		
+
+========================================
+
+
+ n-tier architecture:
+ 
+ 2-tier architecture: Client (Browser) - WebServer /DB
+ 3-tier architecture : client (Browser) / WebService / DBServer
+  n -tiers
+
+Request Soap Payload:
+<body>
+<header>demographic </header>
+<ssn>123-23-1234</ssn>
+</body>
+
+ select fname, lname, dob, gender from schema.DemographicDetails where ssn='123-23-1234';
+
+Response Soap Payload:
+
+ <body>
+<header>demographic </header>
+<firstName>John</firstName>
+<lastName>Doe</lastName>
+<dob>01101990</dob>
+<gender>M</gender>
+</body>
+
+JSon:
+{
+"Fn":"John"
+"Ln":"Doe"
+"Dob":"01101990"
+"Gender":"Male"
+}
+ 
+
+ ================================================================
+
+ 
+ Eclipse Shortcuts:
+ 
+ To Navigate back : ALT + LeftArrow
+ To navigate forward: ALT + RightArrow
+ Refactor Rename : Alt+Shift+R   
+ Open Resource: Ctrl+Shift+R   
+ Open Type: Ctrl+Shift+t
+ OPen Method: Ctrl+O
+ Indentation/Alignment: Ctrl+A & Ctrl+I
+ 
+Firefox DOM: Ctrl+Shift+C
+
+==============================
+Websites for automation practice:
+	
+Good sites:
+HTTP://NEWTOURS.DEMOAUT.COM/ (Homework)
+http://toolsqa.com/automation-practice-form/ (Practice)
+https://phptravels.com/demo/
+http://the-internet.herokuapp.com/
+http://awful-valentine.com/purchase-forms/slow-ajax/
+https://www.ultimateqa.com/automation/
+http://demoqa.com
+http://automationpractice.com/index.php
+
+OK sites:
+http://www.way2automation.com/demo.html  (signup)
+http://www.seleniumframework.com/Practiceform/
+https://www.tutorialspoint.com/qtp/
+http://www.techbeamers.com/
+http://www.techbeamers.com/websites-to-practice-selenium-webdriver-online/
+https://techlisticspace.blogspot.com/2016/06/top-6-demo-websites-for-practice.html
+http://www.seleniumframework.com/demo-sites/
+http://sqa.stackexchange.com/questions/7312/what-is-a-good-website-to-hack-around-using-selenium
+http://booking.uz.gov.ua/en/
+https://book.lufthansa.com/
+https://bdonline.sqe.com/ (not working)
+
+http://www.seleniumframework.com
+http://www.mkyong.com/
+
+
+Resources:
+
+GitHub Automation Project Repository & Libraries:
+
+https://github.com/sangamautomation/AutomationSeleniumJavaProject.git
+https://github.com/sangamautomation/AutomationLibs
+
+Automation Notes: 
+
+https://drive.google.com/open?id=1JP7v_0Vloa8TAHXgf_IGEFR9JleHO7sPZYLrJdUgc1Y
+
+
+
+########## Happy Automation ##########
